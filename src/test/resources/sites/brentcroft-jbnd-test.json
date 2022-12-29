@@ -1,0 +1,6 @@
+{
+  "$url": "http://brentcroft.com/jumping-bases-numbers-dance/test.html",
+  "$properties": "browser.properties",
+  "scriptText": { "$xpath":  "//textarea[ @id='calculationScript' ]" },
+  "eval": { "$xpath":  "//input[ @type='button' and @value='eval' ]" }
+}

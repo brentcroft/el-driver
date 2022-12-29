@@ -1,0 +1,16 @@
+{
+  "$url": "https://jakarta.ee/specifications/expression-language/4.0/apidocs/",
+  "$properties": "browser.properties",
+  "packages": {
+    "$frame": "//frame[ @name = 'packageFrame']",
+    "$xpath":  "//div//ul",
+    "header": { "$xpath":  "//h1" },
+    "lambdaExpression": { "$xpath":  "${ $parent.xpath() }//li/a[ text() = 'LambdaExpression' ]" }
+  },
+  "classes": {
+    "$frame": "//frame[ @name = 'classFrame']",
+    "$xpath":  "//body",
+    "header": { "$xpath":  "//div[ @class = 'header' ]//h2"},
+    "lambdaExpression": { "$xpath":  "//span[ @class = 'typeNameLabel' and contains( text(), 'LambdaExpression' ) ]"}
+  }
+}

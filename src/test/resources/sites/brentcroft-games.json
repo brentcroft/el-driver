@@ -1,0 +1,9 @@
+{
+  "$url": "http://brentcroft.com/shithead/shithead.html",
+  "$properties": "browser.properties",
+
+  "newGameButton": { "$xpath":  "//input[ @type = 'button' and @value = 'New Game' ]" },
+  "stepButton": { "$xpath":  "//input[ @type = 'button' and @value = 'Step' ]" },
+  "stack": { "$xpath":  "//div[ @id = 'stack' ]" },
+  "gamePlay": { "$xpath":  "//pre[ @id = 'game-play-log' ]" }
+}
