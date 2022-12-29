@@ -73,23 +73,17 @@ public class ModelItem extends AbstractModelItem implements ModelElement
         return (WebDriver) getRoot().get( "$driver" );
     }
 
-    public ModelItem until( String test, String operation, int maxTries )
+    public ModelItem until( String booleanTest, String operation, int maxTries )
     {
         int tries = 0;
-
-        Supplier<Boolean> untilTest = () ->  (Boolean)eval( test );
-
-        Object result = null;
-
+        Supplier<Boolean> untilTest = () ->  (Boolean)eval( booleanTest );
         while (!untilTest.get() && tries < maxTries) {
             tries++;
-            result = eval( operation );
+            eval( operation );
         }
-
         if ( tries >= maxTries ) {
-            throw new IllegalArgumentException(format("Ran out of tries (%s) until: \"%s\"", tries, test ));
+            throw new IllegalArgumentException(format("Ran out of tries (%s) until: %s", tries, booleanTest ));
         }
-
         return this;
     }
 }
