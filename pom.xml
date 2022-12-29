@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.brentcroft.tools</groupId>
-	<artifactId>el-pages</artifactId>
+	<artifactId>el-driver</artifactId>
 	<version>01.01.01</version>
 
 	<name>Brentcroft EL Pages</name>
@@ -13,7 +13,7 @@
 		Object page models with Selenium.
 	</description>
 
-	<url>http://github.com/brentcroft/el-pages</url>
+	<url>http://github.com/brentcroft/el-driver</url>
 
 	<licenses>
 		<license>
@@ -32,8 +32,8 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git:https://github.com/brentcroft/el-pages.git</connection>
-		<developerConnection>scm:git:ssh:https://github.com/brentcroft/el-pages.git</developerConnection>
+		<connection>scm:git:git:https://github.com/brentcroft/el-driver.git</connection>
+		<developerConnection>scm:git:ssh:https://github.com/brentcroft/el-driver.git</developerConnection>
 		<url>http://github.com/brentcroft/el-pages</url>
 	</scm>
 
