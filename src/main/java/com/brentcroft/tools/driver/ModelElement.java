@@ -23,6 +23,10 @@ public interface ModelElement
         return getIndexedPath().xpath();
     }
 
+    default void run() {
+        new ModelSteps(getSelf()).run();
+    }
+
     default void switchFrame()
     {
         Model item = getSelf();
@@ -66,7 +70,16 @@ public interface ModelElement
                     format("%s -> %s", getSelf().path(), ipath), e);
         }
     }
-
+    default int count() {
+        switchFrame();
+        IndexedPath ipath = getIndexedPath();
+        try {
+            return getWebDriver().findElements( By.xpath( ipath.xpath() ) ).size();
+        } catch ( NoSuchElementException e) {
+            throw new NoSuchElementException(
+                    format("%s -> %s", getSelf().path(), ipath), e);
+        }
+    }
 
     default boolean isDisplayed() {
         return getWebElement().isDisplayed();

@@ -7,8 +7,7 @@ import org.junit.Test;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class BrowserModelTest
 {
@@ -49,12 +48,23 @@ public class BrowserModelTest
         pageModel.eval( "newGameButton.click()" );
         pageModel.eval( "stack.assertExists()" );
 
-        String expected = "stack.equalsText('Stack size: 0')";
+        String expected = "!stack.equalsText('Stack size: 0')";
         String operation = "stepButton.click()";
-        assertTrue( (Boolean) pageModel
-                .until( expected, operation, 100 )
+
+        assertFalse( (Boolean) pageModel
+                .whileDo( expected, operation, 100 )
                 .eval( expected ) );
     }
+
+    @Test
+    public void playsBrentcroftGameSite() {
+        pageModel.appendFromJson( "{ '$json': 'src/test/resources/sites/brentcroft-games.json' }" );
+        bm.open();
+
+        pageModel.eval( "play.run()" );
+        assertTrue( (Boolean) pageModel.eval( "stack.equalsText('Stack size: 0')" ) );
+    }
+
 
     @Test
     public void loadsJakartaELSite() {

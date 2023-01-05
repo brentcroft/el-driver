@@ -21,7 +21,7 @@ import static java.lang.String.format;
 @Setter
 public class BrowserModel
 {
-    private String downloadDir;
+    private Downloads downloads = new Downloads();
     private boolean autoQuit = true;
     private boolean quitAfterAll = false;
     private boolean allowInteractive = false;
@@ -79,6 +79,7 @@ public class BrowserModel
     public void setPageModel(PageModel pageModel) {
         this.pageModel = pageModel;
         pageModel.putAll( staticModel );
+        pageModel.put( "Downloads", downloads );
     }
 
     public void open() {
@@ -97,7 +98,7 @@ public class BrowserModel
             if (!downloadFile.exists()|| !downloadFile.isDirectory()) {
                 throw new IllegalArgumentException(format("Either the directory does not exist or it's not a directory: $downloadDir: %s", downloadFile));
             }
-            downloadDir = downloadFile.getAbsolutePath();
+            downloads.setDirectory(downloadFile);
         }
         if (pageModel.containsKey( "$allowInteractive" ))
         {
@@ -119,7 +120,7 @@ public class BrowserModel
         String driverModel = (String)pageModel.get("$driverModel");
 
         Map<String,Object> prefs = new HashMap<>();
-        prefs.put( "download.default_directory", downloadDir );
+        prefs.put( "download.default_directory", downloads.getDownloadPath() );
         prefs.put( "download.prompt_for_download", false );
 
         switch (driverModel) {
@@ -153,7 +154,7 @@ public class BrowserModel
             default:
                 throw new IllegalArgumentException( "Not implemented for driver model: " + driverModel );
         }
-
+        downloads.setDriver(driver);
         pageModel.put( "$driver", driver);
 
         driver.get( (String)pageModel.get("$url"));

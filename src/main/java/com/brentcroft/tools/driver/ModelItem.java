@@ -6,10 +6,13 @@ import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
 import org.openqa.selenium.WebDriver;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -61,29 +64,24 @@ public class ModelItem extends AbstractModelItem implements ModelElement
         MapBindings bindings = new MapBindings(this);
         bindings.put( "$self", getSelf() );
         bindings.put( "$parent", getParent() );
-        return Optional
-                .ofNullable(evaluator)
-                .map(exp -> exp.apply( value, bindings ) )
-                .orElse( value );
+        if (evaluator == null) {
+            return null;
+        }
+        List<String> steps = Stream
+                .of(value.split( "\\s*[;\\n\\r]+\\s*" ))
+                .map( String::trim )
+                .filter( v -> !v.isEmpty() && !v.startsWith( "#" ) )
+                .collect( Collectors.toList());;
+        Object[] lastResult = {null};
+        steps.forEach( step -> {
+            lastResult[0] = evaluator.apply( step, bindings );
+        });
+        return lastResult[0];
     }
 
     @Override
     public WebDriver getWebDriver()
     {
         return (WebDriver) getRoot().get( "$driver" );
-    }
-
-    public ModelItem until( String booleanTest, String operation, int maxTries )
-    {
-        int tries = 0;
-        Supplier<Boolean> untilTest = () ->  (Boolean)eval( booleanTest );
-        while (!untilTest.get() && tries < maxTries) {
-            tries++;
-            eval( operation );
-        }
-        if ( tries >= maxTries ) {
-            throw new IllegalArgumentException(format("Ran out of tries (%s) until: %s", tries, booleanTest ));
-        }
-        return this;
     }
 }
