@@ -43,9 +43,7 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     @Override
     public String expand( String value )
     {
-        MapBindings bindings = new MapBindings(this);
-        bindings.put( "$self", getSelf() );
-        bindings.put( "$parent", getParent() );
+        Map<String, Object> bindings = newContainer();
         return Optional
                 .ofNullable(expander)
                 .map(exp -> exp.apply( value, bindings ) )
@@ -61,12 +59,10 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     @Override
     public Object eval( String value )
     {
-        MapBindings bindings = new MapBindings(this);
-        bindings.put( "$self", getSelf() );
-        bindings.put( "$parent", getParent() );
         if (evaluator == null) {
             return null;
         }
+        Map<String, Object> bindings = newContainer();
         List<String> steps = Stream
                 .of(value.split( "\\s*[;\\n\\r]+\\s*" ))
                 .map( String::trim )
@@ -77,6 +73,13 @@ public class ModelItem extends AbstractModelItem implements ModelElement
             lastResult[0] = evaluator.apply( step, bindings );
         });
         return lastResult[0];
+    }
+
+    private Map<String, Object> newContainer() {
+        MapBindings bindings = new MapBindings(this);
+        bindings.put( "$self", getSelf() );
+        bindings.put( "$parent", getParent() );
+        return bindings;
     }
 
     @Override

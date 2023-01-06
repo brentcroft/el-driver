@@ -6,6 +6,7 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -21,6 +22,21 @@ public interface ModelElement
 
     default String xpath() {
         return getIndexedPath().xpath();
+    }
+
+    default void volatileElement( BiConsumer<Model, WebElement> consumer ) {
+        int retries = 5;
+        while ( true ) {
+            try {
+                consumer.accept( getSelf(), getWebElement() );
+                break;
+            } catch (StaleElementReferenceException e) {
+                retries--;
+                if ( retries < 1) {
+                    throw e;
+                }
+            }
+        }
     }
 
     default void switchFrame()
@@ -173,7 +189,7 @@ public interface ModelElement
         throw new AssertionError(format("Element '%s' does not match regex: %s", item.path(), regex));
     }
     default ModelElement click() {
-        getWebElement().click();
+        volatileElement( (i,e) -> e.click() );
         return this;
     }
     default ModelElement setText( CharSequence... keys) {
@@ -183,15 +199,15 @@ public interface ModelElement
         return this;
     }
     default ModelElement selectByText(String text) {
-        new Select(getWebElement()).selectByVisibleText( text );
+        volatileElement( (i,e) -> new Select(e).selectByVisibleText( text ) );
         return this;
     }
     default ModelElement selectByValue(String text) {
-        new Select(getWebElement()).selectByValue( text );
+        volatileElement( (i,e) -> new Select(e).selectByValue( text ) );
         return this;
     }
     default ModelElement selectByIndex(int index) {
-        new Select(getWebElement()).selectByIndex( index );
+        volatileElement( (i,e) -> new Select(e).selectByIndex( index ) );
         return this;
     }
 }
