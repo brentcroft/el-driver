@@ -11,5 +11,6 @@
   "gamePlay": { "$xpath":  "//pre[ @id = 'game-play-log' ]" },
   "play": {
     "$steps": "${ steps.brentcroftGamesPlay }"
-  }
+  },
+  "$steps": "play.run()"
 }
