@@ -23,10 +23,6 @@ public interface ModelElement
         return getIndexedPath().xpath();
     }
 
-    default void run() {
-        new ModelSteps(getSelf()).run();
-    }
-
     default void switchFrame()
     {
         Model item = getSelf();

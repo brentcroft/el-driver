@@ -71,7 +71,7 @@ public class ModelItem extends AbstractModelItem implements ModelElement
                 .of(value.split( "\\s*[;\\n\\r]+\\s*" ))
                 .map( String::trim )
                 .filter( v -> !v.isEmpty() && !v.startsWith( "#" ) )
-                .collect( Collectors.toList());;
+                .collect( Collectors.toList());
         Object[] lastResult = {null};
         steps.forEach( step -> {
             lastResult[0] = evaluator.apply( step, bindings );
