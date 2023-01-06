@@ -61,7 +61,7 @@ public class BrowserModelTest
         pageModel.appendFromJson( "{ '$json': 'src/test/resources/sites/brentcroft-games.json' }" );
         bm.open();
 
-        pageModel.run();
+        pageModel.steps("$self.run()");
         assertTrue( (Boolean) pageModel.eval( "stack.equalsText('Stack size: 0')" ) );
     }
 
