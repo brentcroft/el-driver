@@ -43,10 +43,9 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     @Override
     public String expand( String value )
     {
-        Map<String, Object> bindings = newContainer();
         return Optional
                 .ofNullable(expander)
-                .map(exp -> exp.apply( value, bindings ) )
+                .map(exp -> exp.apply( value, newContainer() ) )
                 .orElse( value );
     }
     /**
@@ -63,15 +62,10 @@ public class ModelItem extends AbstractModelItem implements ModelElement
             return null;
         }
         Map<String, Object> bindings = newContainer();
-        List<String> steps = Stream
-                .of(value.split( "\\s*[;\\n\\r]+\\s*" ))
-                .map( String::trim )
-                .filter( v -> !v.isEmpty() && !v.startsWith( "#" ) )
-                .collect( Collectors.toList());
         Object[] lastResult = {null};
-        steps.forEach( step -> {
-            lastResult[0] = evaluator.apply( step, bindings );
-        });
+        Model
+                .stepsStream( value )
+                .forEach( step -> lastResult[0] = evaluator.apply( step, bindings ) );
         return lastResult[0];
     }
 

@@ -67,6 +67,18 @@ public class BrowserModelTest
 
 
     @Test
+    public void playsBrentcroftGameSiteXml() {
+        pageModel.appendFromJson( "{ '$xml': 'src/test/resources/sites/brentcroft-site.xml' }" );
+        bm.open();
+
+        assertTrue( (Boolean) pageModel.eval( "shithead.notExists()" ) );
+
+        pageModel.steps("openShithead.run()");
+        assertTrue( (Boolean) pageModel.eval( "shithead.exists()" ) );
+    }
+
+
+    @Test
     public void loadsJakartaELSite() {
         pageModel.appendFromJson( "{ '$json': 'src/test/resources/sites/jakarta-el.json' }" );
         bm.open();
