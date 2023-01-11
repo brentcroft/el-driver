@@ -6,26 +6,14 @@ import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
 import org.openqa.selenium.WebDriver;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.lang.String.format;
+import java.util.Stack;
 
 public class ModelItem extends AbstractModelItem implements ModelElement
 {
-    private static BiFunction<String, Map<String,Object>, String> expander;
-    private static BiFunction<String, Map<String,Object>, Object> evaluator;
-
-    static {
-        JstlTemplateManager jstl = new JstlTemplateManager();
-        ModelItem.expander = jstl::expandText;
-        ModelItem.evaluator = jstl::eval;
-    }
+    private static final JstlTemplateManager jstl = new JstlTemplateManager();
+    private static final ThreadLocal< Stack<Map<String, Object>> > scopeStack = ThreadLocal.withInitial( Stack::new );
 
     @Override
     public Class< ? extends Model > getModelClass()
@@ -33,52 +21,64 @@ public class ModelItem extends AbstractModelItem implements ModelElement
         return ModelItem.class;
     }
 
-    /**
-     * Expands a value using the expander
-     * or else just returns the value.
-     *
-     * @param value the value to be expanded
-     * @return the expanded value
-     */
     @Override
-    public String expand( String value )
-    {
-        return Optional
-                .ofNullable(expander)
-                .map(exp -> exp.apply( value, newContainer() ) )
-                .orElse( value );
-    }
-    /**
-     * Evaluates a value using the evaluator
-     * or else just returns the value.
-     *
-     * @param value the value to be evaluated
-     * @return the evaluated value
-     */
-    @Override
-    public Object eval( String value )
-    {
-        if (evaluator == null) {
-            return null;
-        }
-        Map<String, Object> bindings = newContainer();
-        Object[] lastResult = {null};
-        Model
-                .stepsStream( value )
-                .forEach( step -> lastResult[0] = evaluator.apply( step, bindings ) );
-        return lastResult[0];
+    public Map<String, Object> newContainer() {
+        MapBindings bindings = new MapBindings(this);
+        bindings.put( "$local", bindings );
+        bindings.put( "$self", this );
+        bindings.put( "$parent", getParent() );
+        bindings.put( "$static", getStaticModel() );
+        return bindings;
     }
 
-    private Map<String, Object> newContainer() {
-        MapBindings bindings = new MapBindings(this);
-        bindings.put( "$self", getSelf() );
-        bindings.put( "$parent", getParent() );
-        return bindings;
+    @Override
+    public Expander getExpander()
+    {
+        return jstl::expandText;
+    }
+
+    @Override
+    public Evaluator getEvaluator()
+    {
+        return jstl::eval;
     }
 
     @Override
     public WebDriver getWebDriver()
     {
-        return (WebDriver) getRoot().get( "$driver" );
+        return getBrowser().getWebDriver();
+    }
+
+    @Override
+    public Browser getBrowser() {
+        return Optional
+                .ofNullable(getRoot())
+                // the root should have overridden
+                // this method to supply an actual Browser
+                .filter( p -> p != this )
+                .filter( p -> p instanceof ModelItem )
+                .map( p -> ((ModelItem)p).getBrowser())
+                .orElseThrow(() -> new IllegalArgumentException("No WebDriver available!"));
+    }
+
+    @Override
+    public Map<String, Object> getCurrentScope()
+    {
+        return scopeStack.get().empty()
+               ? newContainer()
+               : ((MapBindings)newContainer())
+                       .withParent( scopeStack.get().peek() );
+    }
+
+    @Override
+    public void newCurrentScope() {
+        scopeStack.get().push( getCurrentScope() );
+    }
+
+    @Override
+    public void dropCurrentScope() {
+        if (! scopeStack.get().empty()) {
+            scopeStack.get().pop();
+        }
     }
 }

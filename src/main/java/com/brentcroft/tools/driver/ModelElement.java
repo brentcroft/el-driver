@@ -14,6 +14,7 @@ import static java.lang.String.format;
 public interface ModelElement
 {
     Model getSelf();
+    Browser getBrowser();
     WebDriver getWebDriver();
 
     default IndexedPath getIndexedPath() {
@@ -59,11 +60,9 @@ public interface ModelElement
                 driver.switchTo().frame( frames.get( 0 ) );
                 root.put(currentFrameKey, ipath.frame());
 
-//                String msg = format("'%s' -> frame found: %s; current=%s", item.path(), ipath.frame(), currentFrame);
-//                System.out.println(msg);
             } else {
                 String msg = format("'%s' -> frame not found: %s; current=%s", item.path(), ipath.frame(), currentFrame);
-                System.out.println(msg);
+                getSelf().logStep( msg );
             }
         }
     }
@@ -190,24 +189,29 @@ public interface ModelElement
     }
     default ModelElement click() {
         volatileElement( (i,e) -> e.click() );
+        getSelf().maybeDelay();
         return this;
     }
     default ModelElement setText( CharSequence... keys) {
         getWebElement().sendKeys( Keys.chord(Keys.CONTROL, "a"));
         getWebElement().sendKeys( Keys.DELETE);
         getWebElement().sendKeys( keys);
+        getSelf().maybeDelay();
         return this;
     }
     default ModelElement selectByText(String text) {
         volatileElement( (i,e) -> new Select(e).selectByVisibleText( text ) );
+        getSelf().maybeDelay();
         return this;
     }
     default ModelElement selectByValue(String text) {
         volatileElement( (i,e) -> new Select(e).selectByValue( text ) );
+        getSelf().maybeDelay();
         return this;
     }
     default ModelElement selectByIndex(int index) {
         volatileElement( (i,e) -> new Select(e).selectByIndex( index ) );
+        getSelf().maybeDelay();
         return this;
     }
 }

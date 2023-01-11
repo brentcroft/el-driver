@@ -1,48 +1,35 @@
 package com.brentcroft.tools.driver;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
-
-
+@Getter
+@Setter
 public class Downloads
 {
-    private WebDriver driver;
-    private File dir;
-
-    public void setDirectory( File dir )
-    {
-        this.dir = dir;
-    }
-
-    public void setDriver( WebDriver driver )
-    {
-        this.driver = driver;
-    }
+    private File directory;
 
     public String getDownloadPath()
     {
-        if (dir == null) {
-            throw new IllegalArgumentException("dir is null");
+        if ( directory == null) {
+            throw new IllegalArgumentException("directory is null");
         }
-        return dir.getAbsolutePath();
+        return directory.getAbsolutePath();
     }
 
     public int remove(String prefix) {
-        if (dir == null) {
-            throw new IllegalArgumentException("dir is null");
+        if ( directory == null) {
+            throw new IllegalArgumentException("directory is null");
         }
         int[] numDeleted = {0};
         Stream
-                .of( Objects.requireNonNull( dir.listFiles( f -> f.getName().startsWith( prefix ) ) ) )
+                .of( Objects.requireNonNull( directory.listFiles( f -> f.getName().startsWith( prefix ) ) ) )
                 .forEach( file -> {
                     if (file.exists() && file.isFile()) {
                         if (file.delete()) {
@@ -53,7 +40,6 @@ public class Downloads
         return numDeleted[0];
     }
 
-
     public int move(String prefix, String targetDirectory) {
         File targetDir = new File(targetDirectory);
         if (!targetDir.exists()) {
@@ -62,7 +48,7 @@ public class Downloads
 
         int[] numMoved = {0};
         Stream
-                .of( Objects.requireNonNull( dir.listFiles( f -> f.getName().startsWith( prefix ) ) ) )
+                .of( Objects.requireNonNull( directory.listFiles( f -> f.getName().startsWith( prefix ) ) ) )
                 .forEach( file -> {
                     File newFile = new File(targetDir, file.getName());
                     try {
@@ -76,7 +62,16 @@ public class Downloads
     }
 
     public void detect(String filename, long millisTimeout) {
-        new WebDriverWait( driver, Duration.ofMillis( millisTimeout ) )
-                .until( driver -> new File(dir,filename).exists()  );
+        long timeoutMillis = System.currentTimeMillis() + millisTimeout;
+        while(!new File( directory,filename).exists() && timeoutMillis < System.currentTimeMillis()) {
+            try
+            {
+                Thread.sleep( 100 );
+            }
+            catch ( InterruptedException e )
+            {
+                e.printStackTrace();
+            }
+        }
     }
 }

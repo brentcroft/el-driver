@@ -47,6 +47,6 @@ public class IndexedPath
         return index;
     }
     public String toString() {
-        return format("{%s}%s;index:[%d]", frame, xpath, index);
+        return format("{%s} %s {index:%d}", frame, xpath, index);
     }
 }

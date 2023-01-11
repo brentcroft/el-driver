@@ -1,6 +1,4 @@
 <brentcroft properties="browser.properties" url="http://brentcroft.com">
-    <long key="$operationDelayMillis">100</long>
-    <long key="$stepDelayMillis">10</long>
     <model key="home">
         <model key="boxes" xpath="//a[ @href = 'jumping-bases-numbers-dance' ]"/>
         <model key="animalsCount" xpath="//a[ @href = 'animals-count' ]"/>
@@ -27,9 +25,11 @@
             $local.delayMillis = 1000;
 
             # comment lines are stripped out
-            c:println( delayMillis );
+            c:delay( delayMillis );
 
             home.shithead.click();
+
+            c:delay( delayMillis );
         </entry>
     </model>
 </brentcroft>
