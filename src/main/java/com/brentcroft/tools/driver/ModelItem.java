@@ -22,8 +22,8 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     }
 
     @Override
-    public Map<String, Object> newContainer() {
-        MapBindings bindings = new MapBindings(this);
+    public Map<String, Object> newContainer(Map<String, Object> scope) {
+        MapBindings bindings = new MapBindings(scope);
         bindings.put( "$local", bindings );
         bindings.put( "$self", this );
         bindings.put( "$parent", getParent() );
@@ -64,10 +64,11 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     @Override
     public Map<String, Object> getCurrentScope()
     {
-        return scopeStack.get().empty()
-               ? newContainer()
-               : ((MapBindings)newContainer())
-                       .withParent( scopeStack.get().peek() );
+        return newContainer( this );
+//        return scopeStack.get().empty()
+//               ? newContainer()
+//               : ((MapBindings)newContainer())
+//                       .withParent( scopeStack.get().peek() );
     }
 
     @Override
