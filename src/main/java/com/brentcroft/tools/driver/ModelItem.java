@@ -34,9 +34,9 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     }
 
     @Override
-    public Map<String, Object> newContainer(Map<String, Object> scope) {
-        MapBindings bindings = new MapBindings(scope);
-        bindings.put( "$local", bindings );
+    public Map<String, Object> newContainer() {
+        MapBindings bindings = new MapBindings(this);
+        bindings.put( "$local", getScopeStack().peek() );
         bindings.put( "$self", this );
         bindings.put( "$parent", getParent() );
         bindings.put( "$static", getStaticModel() );
@@ -71,27 +71,5 @@ public class ModelItem extends AbstractModelItem implements ModelElement
                 .filter( p -> p instanceof ModelItem )
                 .map( p -> ((ModelItem)p).getBrowser())
                 .orElseThrow(() -> new IllegalArgumentException("No WebDriver available!"));
-    }
-
-    @Override
-    public Map<String, Object> getCurrentScope()
-    {
-        return newContainer( this );
-//        return scopeStack.get().empty()
-//               ? newContainer()
-//               : ((MapBindings)newContainer())
-//                       .withParent( scopeStack.get().peek() );
-    }
-
-    @Override
-    public void newCurrentScope() {
-        scopeStack.get().push( getCurrentScope() );
-    }
-
-    @Override
-    public void dropCurrentScope() {
-        if (! scopeStack.get().empty()) {
-            scopeStack.get().pop();
-        }
     }
 }

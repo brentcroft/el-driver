@@ -133,7 +133,7 @@ public interface ModelElement
         switchFrame();
         IPath ipath = getIPath();
         try {
-            return getWebDriver().findElements( By.xpath( ipath.xpath() ) ).size();
+            return getWebDriver().findElements( ipath.by() ).size();
         } catch ( NoSuchElementException e) {
             throw new NoSuchElementException(
                     format("%s -> %s", getSelf().path(), ipath), e);
@@ -167,7 +167,7 @@ public interface ModelElement
         throw new AssertionError("Element does not exist: " + getSelf());
     }
     default boolean assertNotExists() {
-        if(!exists()) {
+        if(notExists()) {
             return true;
         }
         throw new AssertionError("Element does exist: " + getSelf());
