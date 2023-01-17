@@ -37,7 +37,7 @@ public class ModelSteps
         apply_steps_inline( after, steps );
     }
 
-    @Given("^site \"[^\"]*]\" is open$")
+    @Given( "site {string} is open" )
     public void site_is_open(String siteFile) {
         if (siteFile.endsWith( ".json" ))
         {
@@ -65,6 +65,4 @@ public class ModelSteps
     @Given("^reset step delay$")
     public void reset_step_delay() {
     }
-
-
 }

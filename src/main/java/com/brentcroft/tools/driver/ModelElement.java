@@ -4,12 +4,15 @@ import com.brentcroft.tools.model.Model;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.Select;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 public interface ModelElement
 {
@@ -17,12 +20,12 @@ public interface ModelElement
     Browser getBrowser();
     WebDriver getWebDriver();
 
-    default IndexedPath getIndexedPath() {
-        return new IndexedPath(getSelf());
+    default IPath getIPath() {
+        return new IPath(getSelf());
     }
 
     default String xpath() {
-        return getIndexedPath().xpath();
+        return getIPath().xpath();
     }
 
     default void volatileElement( BiConsumer<Model, WebElement> consumer ) {
@@ -44,7 +47,7 @@ public interface ModelElement
     {
         Model item = getSelf();
         Model root = item.getRoot();
-        IndexedPath ipath = getIndexedPath();
+        IPath ipath = getIPath();
         final String currentFrameKey = "$currentFrame";
         String currentFrame = (String) root.get(currentFrameKey);
         if (currentFrame != null && currentFrame.equals( ipath.frame() )) {
@@ -67,11 +70,40 @@ public interface ModelElement
         }
     }
 
+    default SearchContext navigateShadows() {
+        Function<Model, Model> pf = (model)-> ( Model ) Optional
+                .ofNullable( model.getParent() )
+                .filter( p -> p instanceof Model )
+                .orElse( null );
+        LinkedList<ModelItem> hosts = new LinkedList<>();
+        Model parentModel = pf.apply(getSelf());
+        while (nonNull(parentModel)) {
+            ModelItem item = (ModelItem)parentModel;
+            if (item.hasShadowRoot()) {
+                hosts.addFirst( item );
+            }
+            parentModel = pf.apply(parentModel);
+        }
+        SearchContext context = getWebDriver();
+        for (ModelItem host : hosts) {
+            context = host.getWebElement(context).getShadowRoot();
+        }
+        return context;
+    }
+
+    default boolean hasShadowRoot() {
+        return getSelf().containsKey( "$shadow" );
+    }
+
     default WebElement getWebElement() {
+        return getWebElement(navigateShadows());
+    }
+
+    default WebElement getWebElement(SearchContext context) {
         switchFrame();
-        IndexedPath ipath = getIndexedPath();
+        IPath ipath = getIPath();
         try {
-            List<WebElement> elements = getWebDriver().findElements( By.xpath( ipath.xpath() ) );
+            List<WebElement> elements = context.findElements( ipath.by() );
             if ( elements.size() > ipath.index()) {
                 return elements.get( ipath.index() );
             }
@@ -81,9 +113,21 @@ public interface ModelElement
                     format("%s -> %s", getSelf().path(), ipath), e);
         }
     }
+
+    default List<WebElement> getWebElements(SearchContext context) {
+        switchFrame();
+        IPath ipath = getIPath();
+        try {
+            return context.findElements( ipath.by() );
+        } catch ( NoSuchElementException e) {
+            throw new NoSuchElementException(
+                    format("%s -> %s", getSelf().path(), ipath), e);
+        }
+    }
+
     default int count() {
         switchFrame();
-        IndexedPath ipath = getIndexedPath();
+        IPath ipath = getIPath();
         try {
             return getWebDriver().findElements( By.xpath( ipath.xpath() ) ).size();
         } catch ( NoSuchElementException e) {
