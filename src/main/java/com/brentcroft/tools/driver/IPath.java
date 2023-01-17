@@ -34,7 +34,7 @@ public class IPath
             cssSelector = (String)model.get("$cssSelector");
         }
         if ( model.containsKey("$index") ) {
-            index = Integer.parseInt((String)model.get("$index"));
+            index = Integer.parseInt((String)model.get("$index")) - 1;
         }
         if ( model.containsKey("$xpath") ) {
             xpath = Optional

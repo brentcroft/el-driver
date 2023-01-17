@@ -13,11 +13,10 @@ import static org.junit.Assert.*;
 public class BrowserModelTest
 {
     private static final Browser bm = new Browser( );
-    private final PageModel pageModel = new PageModel();
+    private final PageModel pageModel = bm.getPageModel();
 
     @Before
     public void installPageModel() {
-        bm.setPageModel( pageModel );
         pageModel.setCurrentDirectory( Paths.get("src/test/resources/sites") );
     }
 

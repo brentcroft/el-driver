@@ -2,6 +2,8 @@ package com.brentcroft.tools.driver;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,6 +15,7 @@ import org.openqa.selenium.safari.SafariOptions;
 import java.io.File;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -29,7 +32,7 @@ public class Browser
     private boolean headless = false;
 
     private WebDriver webDriver;
-    private PageModel pageModel = new PageModel();
+    private final PageModel pageModel = new PageModel();
 
     private final Stack<Long> delayStack = new Stack<>();
     private final Stack<Long> implicitWaitStack = new Stack<>();
@@ -45,6 +48,10 @@ public class Browser
     };
     private final Map<String, Runnable> afters = new LinkedHashMap<>();
     private final Map<String, Runnable> afterAlls = new LinkedHashMap<>();
+
+    public Browser() {
+        pageModel.setBrowser( this );
+    }
 
     public void close() {
         try {
@@ -82,16 +89,17 @@ public class Browser
         }
     }
 
+    public void closeDriver() {
+        if ( webDriver != null) {
+            webDriver.close();
+        }
+    }
+
     public void quitDriver() {
         if ( webDriver != null && (isAutoQuit() || isHeadless())) {
             webDriver.quit();
             webDriver = null;
         }
-    }
-
-    public void setPageModel(PageModel pageModel) {
-        this.pageModel = pageModel;
-        pageModel.setBrowser( this );
     }
 
     public void open() {
@@ -184,7 +192,26 @@ public class Browser
         webDriver.manage().timeouts().implicitlyWait( Duration.ofMillis( getImplicitWait() ) );
 
         webDriver.get( (String)pageModel.get("$url"));
-        webDriver.manage().window().maximize();
+
+        if (pageModel.containsKey( "$position" )) {
+            String position = (String)pageModel.get("$position");
+            int[] coords = Stream
+                    .of(position.split("\\s*,\\s*"))
+                    .mapToInt( s -> Integer.parseInt( s ) )
+                    .toArray();
+            if (coords.length < 4) {
+                throw new IllegalArgumentException(format("$position must be q comma separated list of 4 integers."));
+            }
+            Point point = new Point(coords[0], coords[1]);
+            webDriver.manage().window().setPosition( point );
+
+            Dimension dimension = new Dimension(coords[2], coords[3]);
+            webDriver.manage().window().setSize( dimension );
+        }
+        if (pageModel.containsKey( "$maximize" ) && Boolean.parseBoolean( (String)pageModel.get( "$maximize" )))
+        {
+            webDriver.manage().window().maximize();
+        }
     }
     public void setDelay( long delayMillis) {
         getDelayStack().push( delayMillis );

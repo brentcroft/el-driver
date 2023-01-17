@@ -23,7 +23,7 @@
 
 
     <model key="openShithead">
-        <entry key="$steps">
+        <entry key="$run">
             $local.delayMillis = 1000;
 
             # comment lines are stripped out

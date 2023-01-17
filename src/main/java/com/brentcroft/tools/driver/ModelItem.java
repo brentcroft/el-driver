@@ -15,6 +15,18 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     private static final JstlTemplateManager jstl = new JstlTemplateManager();
     private static final ThreadLocal< Stack<Map<String, Object>> > scopeStack = ThreadLocal.withInitial( Stack::new );
 
+    static {
+        try
+        {
+            BrowserELFunctions.install( jstl );
+        }
+        catch ( NoSuchMethodException e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     public Class< ? extends Model > getModelClass()
     {

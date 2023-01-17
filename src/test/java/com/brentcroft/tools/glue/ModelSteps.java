@@ -8,7 +8,9 @@ import static java.lang.String.format;
 
 public class ModelSteps
 {
-    Browser browser = Browsers.getDefaultBrowser();
+    private final Browser browser = Browsers
+            .instance()
+            .getDefaultBrowser();
 
     @Given("^apply steps(| after| after all| before all) \"([^\"]*)\"$")
     public void apply_steps_inline(String after, String steps) {

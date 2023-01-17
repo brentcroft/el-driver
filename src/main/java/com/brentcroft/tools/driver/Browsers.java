@@ -5,38 +5,51 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-public class Browsers
+public class Browsers extends HashMap<String, Browser>
 {
     private static final Map<String, Browser> browsers = new HashMap<>();
     private static final Browsers instance = new Browsers();
     private static final String DEFAULT = "default";
+    private final Browser defaultBrowser = new Browser();
 
     public static Browsers instance() {
         return instance;
     }
 
     private Browsers() {
-        setBrowser( DEFAULT, new Browser() );
+        put( DEFAULT, new Browser() );
     }
 
-    public static Browser getDefaultBrowser() {
-        if (!browsers.containsKey( DEFAULT )) {
-            throw new IllegalArgumentException(format("No such browser with key '%s'.", DEFAULT));
-        }
-        return browsers.get( DEFAULT );
+    public Browser put(String key, Browser browser) {
+        // static copies of all page models
+        browser.getPageModel().putStatic( key, browser.getPageModel() );
+        return super.put(key, browser);
     }
 
-
-    public Browser getBrowser( String key ) {
-        if (!browsers.containsKey( key )) {
-            throw new IllegalArgumentException(format("No such browser with key '%s'.", key));
-        }
-        return browsers.get( key );
+    public Browser getDefaultBrowser() {
+        return defaultBrowser;
     }
-    public void setBrowser( String key, Browser browser ) {
-        if (browsers.containsKey( key )) {
-            throw new IllegalArgumentException(format("A browser with key '%s' already exists.", key));
-        }
-        browsers.put( key, browser );
+
+    public void close() {
+        forEach((key, browser) -> {
+            try {
+                System.out.printf( "Closing browser: %s%n", key);
+                browser.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+    }
+    public void closeCompletely() {
+        forEach((key, browser) -> {
+            try {
+                System.out.printf( "Closing browser completely: %s%n", key);
+                browser.closeCompletely();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
     }
 }

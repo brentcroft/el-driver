@@ -114,6 +114,10 @@ public interface ModelElement
         }
     }
 
+    default List<WebElement> getWebElements() {
+        return getWebElements(navigateShadows());
+    }
+
     default List<WebElement> getWebElements(SearchContext context) {
         switchFrame();
         IPath ipath = getIPath();
@@ -151,15 +155,10 @@ public interface ModelElement
     }
 
     default boolean exists() {
-        try {
-            getWebElement();
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+        return getWebElements().size() > 0;
     }
     default boolean notExists() {
-        return !exists();
+        return getWebElements().size() == 0;
     }
     default boolean assertExists() {
         if(exists()) {
@@ -240,6 +239,16 @@ public interface ModelElement
         getWebElement().sendKeys( Keys.chord(Keys.CONTROL, "a"));
         getWebElement().sendKeys( Keys.DELETE);
         getWebElement().sendKeys( keys);
+        getSelf().maybeDelay();
+        return this;
+    }
+    default ModelElement tab() {
+        getWebElement().sendKeys( Keys.TAB);
+        getSelf().maybeDelay();
+        return this;
+    }
+    default ModelElement enter() {
+        getWebElement().sendKeys( Keys.ENTER);
         getSelf().maybeDelay();
         return this;
     }
