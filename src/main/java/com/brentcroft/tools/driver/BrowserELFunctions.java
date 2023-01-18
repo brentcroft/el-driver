@@ -1,14 +1,8 @@
 package com.brentcroft.tools.driver;
 
 import com.brentcroft.tools.jstl.JstlTemplateManager;
-import com.brentcroft.tools.model.InteractiveFrame;
 import com.brentcroft.tools.model.Model;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import com.brentcroft.tools.model.ModelInspectorDialog;
 
 public class BrowserELFunctions
 {
@@ -16,8 +10,8 @@ public class BrowserELFunctions
     {
         jstl.getELTemplateManager()
                 .mapFunction(
-                        "interact",
-                        BrowserELFunctions.class.getMethod("interact", Model.class, String.class ) );
+                        "inspect",
+                        BrowserELFunctions.class.getMethod("inspect", Model.class, String.class ) );
 
         jstl.getELTemplateManager()
                 .mapFunction(
@@ -25,13 +19,12 @@ public class BrowserELFunctions
                         BrowserELFunctions.class.getMethod("delay", long.class ) );
     }
 
-    public static void interact(Model model, String steps) {
-            InteractiveFrame frame = new InteractiveFrame( model );
-            frame.setSteps( steps );
-            frame.setModal( true );
-            frame.setVisible( true );
+    public static void inspect(Model model, String steps) {
+        ModelInspectorDialog inspector = new ModelInspectorDialog( model );
+        inspector.setSteps( steps );
+        inspector.setModal( true );
+        inspector.setVisible( true );
     }
-
 
     public static String delay(long millis) {
         try
