@@ -1,13 +1,9 @@
 package com.brentcroft.tools.driver;
 
 import java.util.HashMap;
-import java.util.Map;
-
-import static java.lang.String.format;
 
 public class Browsers extends HashMap<String, Browser>
 {
-    private static final Map<String, Browser> browsers = new HashMap<>();
     private static final Browsers instance = new Browsers();
     private static final String DEFAULT = "default";
     private final Browser defaultBrowser = new Browser();
@@ -17,7 +13,7 @@ public class Browsers extends HashMap<String, Browser>
     }
 
     private Browsers() {
-        put( DEFAULT, new Browser() );
+        put( DEFAULT, defaultBrowser );
     }
 
     public Browser put(String key, Browser browser) {

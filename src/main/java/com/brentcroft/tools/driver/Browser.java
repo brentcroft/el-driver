@@ -89,14 +89,9 @@ public class Browser
         }
     }
 
-    public void closeDriver() {
-        if ( webDriver != null) {
-            webDriver.close();
-        }
-    }
-
     public void quitDriver() {
         if ( webDriver != null && (isAutoQuit() || isHeadless())) {
+            System.out.printf( "Quitting driver: auto=%s, headless=%s%n", isAutoQuit(), isHeadless());
             webDriver.quit();
             webDriver = null;
         }
