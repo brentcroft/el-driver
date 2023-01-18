@@ -6,14 +6,13 @@ import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
 import org.openqa.selenium.WebDriver;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Stack;
 
 public class ModelItem extends AbstractModelItem implements ModelElement
 {
     private static final JstlTemplateManager jstl = new JstlTemplateManager();
-    private static final ThreadLocal< Stack<Map<String, Object>> > scopeStack = ThreadLocal.withInitial( Stack::new );
 
     static {
         try
@@ -36,7 +35,9 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     @Override
     public Map<String, Object> newContainer() {
         MapBindings bindings = new MapBindings(this);
-        bindings.put( "$local", getScopeStack().peek() );
+        bindings.put( "$local", getScopeStack().isEmpty()
+                                ? new HashMap<>()
+                                : getScopeStack().peek() );
         bindings.put( "$self", this );
         bindings.put( "$parent", getParent() );
         bindings.put( "$static", getStaticModel() );
