@@ -10,7 +10,7 @@
   "stack": { "$xpath":  "//div[ @id = 'stack' ]" },
   "gamePlay": { "$xpath":  "//pre[ @id = 'game-play-log' ]" },
   "play": {
-    "$run": "${ steps.brentcroftGamesPlay }"
+    "$$run": "${ steps.brentcroftGamesPlay }"
   },
-  "$run": "play.run()"
+  "$$run": "play.run()"
 }
