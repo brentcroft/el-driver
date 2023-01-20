@@ -2,9 +2,7 @@ package com.brentcroft.tools.driver;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -110,6 +108,19 @@ public class Browser
 
         } else {
 
+            if (pageModel.containsKey( "$allowInteractive" ))
+            {
+                allowInteractive = Boolean.parseBoolean( pageModel.get( "$allowInteractive" ).toString() );
+            }
+
+            if (pageModel.containsKey( "$headless" ))
+            {
+                headless = Boolean.parseBoolean( pageModel.get( "$headless" ).toString() );
+                if (headless) {
+                    allowInteractive = false;
+                }
+            }
+
             if (pageModel.containsKey( "$downloadDir" )) {
                 File downloadFile = new File( pageModel.get( "$downloadDir" ).toString());
                 if (!downloadFile.exists()|| !downloadFile.isDirectory()) {
@@ -155,18 +166,6 @@ public class Browser
             }
         }
 
-        if (pageModel.containsKey( "$allowInteractive" ))
-        {
-            allowInteractive = Boolean.parseBoolean( pageModel.get( "$allowInteractive" ).toString() );
-        }
-
-        if (pageModel.containsKey( "$headless" ))
-        {
-            headless = Boolean.parseBoolean( pageModel.get( "$headless" ).toString() );
-            if (headless) {
-                allowInteractive = false;
-            }
-        }
         if (pageModel.containsKey( "$quitAfterAll" ))
         {
             quitAfterAll = Boolean.parseBoolean( pageModel.get( "$quitAfterAll" ).toString() );
@@ -208,6 +207,11 @@ public class Browser
             webDriver.manage().window().maximize();
         }
     }
+
+    public void executeScript( String script, List<Object> args ) {
+        (( JavascriptExecutor )webDriver).executeScript( script, args.toArray() );
+    }
+
     public void setDelay( long delayMillis) {
         getDelayStack().push( delayMillis );
     }
