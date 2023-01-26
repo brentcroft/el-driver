@@ -75,7 +75,7 @@ public class BrowserModelTest
         pageModel.steps("$self.run()");
         assertTrue( (Boolean) pageModel.eval( "stack.equalsText('Stack size: 0')" ) );
 
-        pageModel.steps("c:inspect($self,'')");
+        //pageModel.steps("c:inspect($self,'')");
     }
 
 
