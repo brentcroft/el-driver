@@ -267,4 +267,10 @@ public interface ModelElement
         getSelf().maybeDelay();
         return this;
     }
+
+    default ModelElement setAttribute(String key, Object value) {
+        String script = format("arguments[0].setAttribute( '%s', '%s' )", key, value);
+        ((JavascriptExecutor)getWebDriver()).executeScript( script, getWebElement() );
+        return this;
+    }
 }
