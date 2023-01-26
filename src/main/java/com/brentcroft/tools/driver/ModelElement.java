@@ -1,6 +1,7 @@
 package com.brentcroft.tools.driver;
 
 import com.brentcroft.tools.model.Model;
+import com.brentcroft.tools.model.ModelEvent;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.Select;
 
@@ -65,7 +66,12 @@ public interface ModelElement
 
             } else {
                 String msg = format("'%s' -> frame not found: %s; current=%s", item.path(), ipath.frame(), currentFrame);
-                getSelf().logStep( msg );
+                getSelf()
+                        .notifyModelEvent(
+                                ModelEvent
+                                        .EventType
+                                        .MESSAGE
+                                        .newEvent(getSelf(), msg) );
             }
         }
     }

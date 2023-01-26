@@ -1,5 +1,6 @@
 package com.brentcroft.tools.driver;
 
+import com.brentcroft.tools.model.ModelEvent;
 import lombok.Getter;
 import lombok.Setter;
 import org.openqa.selenium.*;
@@ -58,8 +59,12 @@ public class Browser
                         try {
                             after.run();
                         } catch (Exception e) {
-                            System.out.printf( "Error running after: %s; %s%n", script, e);
-                            e.printStackTrace();
+                            getPageModel()
+                                    .notifyModelEvent(
+                                            ModelEvent
+                                                    .EventType
+                                                    .EXCEPTION
+                                                    .newEvent(getPageModel(), format("Error running after: %s; %s", script, e), e) );
                         }
                     } );
             afters.clear();
@@ -77,8 +82,12 @@ public class Browser
                         try {
                             after.run();
                         } catch (Exception e) {
-                            System.out.printf( "Error running after all: %s; %s%n", script, e);
-                            e.printStackTrace();
+                            getPageModel()
+                                    .notifyModelEvent(
+                                            ModelEvent
+                                                    .EventType
+                                                    .EXCEPTION
+                                                    .newEvent(getPageModel(), format("Error running after all: %s; %s", script, e), e) );
                         }
                     } );
             afterAlls.clear();
@@ -191,10 +200,10 @@ public class Browser
             String position = (String)pageModel.get("$position");
             int[] coords = Stream
                     .of(position.split("\\s*,\\s*"))
-                    .mapToInt( s -> Integer.parseInt( s ) )
+                    .mapToInt( Integer::parseInt )
                     .toArray();
             if (coords.length < 4) {
-                throw new IllegalArgumentException(format("$position must be q comma separated list of 4 integers."));
+                throw new IllegalArgumentException( "$position must be q comma separated list of 4 integers." );
             }
             Point point = new Point(coords[0], coords[1]);
             webDriver.manage().window().setPosition( point );
