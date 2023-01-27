@@ -11,19 +11,26 @@ import static java.util.Objects.nonNull;
 
 public class IPath
 {
-    private String frame;
+    private final String frame;
     private String xpath;
     private int index;
     private String cssSelector;
     private String id;
     private String className;
 
-    public IPath( Model model) {
-        frame = Optional
+    private String getFrame(Model model) {
+        return Optional
                 .ofNullable(model.get("$frame"))
                 .map(Object::toString)
-                .orElse(".");
+                .orElseGet( () -> Optional
+                        .ofNullable( model.getParent() )
+                        .filter( p -> p instanceof Model)
+                        .map( p -> getFrame((Model)p))
+                        .orElse("."));
+    }
 
+    public IPath( Model model) {
+        frame = getFrame(model);
         if ( model.containsKey("$id") ) {
             id = (String)model.get("$id");
         }

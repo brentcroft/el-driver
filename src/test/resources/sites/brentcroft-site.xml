@@ -29,7 +29,7 @@
             # comment lines are stripped out
             c:println( delayMillis );
 
-            home.shithead.click();
+            $parent.home.shithead.click();
         </entry>
     </model>
 </brentcroft>

@@ -1,8 +1,9 @@
 package com.brentcroft.tools.driver;
 
 import com.brentcroft.tools.jstl.JstlTemplateManager;
-import com.brentcroft.tools.model.Model;
 import com.brentcroft.tools.model.ModelInspectorDialog;
+import com.brentcroft.tools.model.ReturnException;
+import jakarta.el.LambdaExpression;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -65,7 +66,7 @@ public class BrowserELFunctions
     }
 
     public static void raiseReturnException(Object value) {
-        throw new Model.ReturnException( value );
+        throw new ReturnException( value );
     }
 
     public static long millisBetween(LocalDateTime earlier, LocalDateTime later) {
@@ -109,5 +110,12 @@ public class BrowserELFunctions
             from = from.plusDays( 1 );
         }
         return dates;
+    }
+
+    public static void ifThen( LambdaExpression test, LambdaExpression thenOperation )
+    {
+        if ((Boolean)test.invoke(  ) ) {
+            thenOperation.invoke(  );
+        }
     }
 }
