@@ -1,5 +1,7 @@
 package com.brentcroft.tools.driver;
 
+import com.brentcroft.tools.el.SimpleELResolver;
+import com.brentcroft.tools.el.ThreadLocalStackELResolver;
 import com.brentcroft.tools.jstl.JstlTemplateManager;
 import com.brentcroft.tools.jstl.MapBindings;
 import com.brentcroft.tools.model.AbstractModelItem;
@@ -17,7 +19,13 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     static {
         try
         {
-            BrowserELFunctions.install( jstl );
+            jstl
+                    .getELTemplateManager()
+                    .addResolvers(
+                            new ThreadLocalStackELResolver( AbstractModelItem.scopeStack),
+                            new SimpleELResolver( AbstractModelItem.staticModel  ) );
+            BrowserELFunctions
+                    .install( jstl.getELTemplateManager() );
         }
         catch ( NoSuchMethodException e )
         {

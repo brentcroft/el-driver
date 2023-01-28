@@ -1,9 +1,7 @@
 package com.brentcroft.tools.driver;
 
-import com.brentcroft.tools.jstl.JstlTemplateManager;
+import com.brentcroft.tools.el.ELTemplateManager;
 import com.brentcroft.tools.model.ModelInspectorDialog;
-import com.brentcroft.tools.model.ReturnException;
-import jakarta.el.LambdaExpression;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,35 +11,21 @@ import java.util.Map;
 
 public class BrowserELFunctions
 {
-    public static void install( JstlTemplateManager jstl ) throws NoSuchMethodException
+    public static void install( ELTemplateManager el ) throws NoSuchMethodException
     {
-        jstl.getELTemplateManager()
-                .mapFunction(
+        el.mapFunction(
                         "inspect",
                         BrowserELFunctions.class.getMethod("inspect", Map.class, String.class ) );
 
-        jstl.getELTemplateManager()
-                .mapFunction(
-                        "delay",
-                        BrowserELFunctions.class.getMethod("delay", long.class ) );
-
-        jstl.getELTemplateManager()
-                .mapFunction(
-                        "return",
-                        BrowserELFunctions.class.getMethod("raiseReturnException", Object.class) );
-
-        jstl.getELTemplateManager()
-                .mapFunction(
+        el.mapFunction(
                         "nextWorkingDay",
                         BrowserELFunctions.class.getMethod("nextWorkingDay", LocalDateTime.class) );
 
-        jstl.getELTemplateManager()
-                .mapFunction(
+        el.mapFunction(
                         "millisBetween",
                         BrowserELFunctions.class.getMethod("millisBetween", LocalDateTime.class, LocalDateTime.class) );
 
-        jstl.getELTemplateManager()
-                .mapFunction(
+        el.mapFunction(
                         "dateRange",
                         BrowserELFunctions.class.getMethod("dateRange", LocalDateTime.class, LocalDateTime.class) );
     }
@@ -51,22 +35,6 @@ public class BrowserELFunctions
         inspector.setSteps( steps );
         inspector.setModal( true );
         inspector.setVisible( true );
-    }
-
-    public static String delay(long millis) {
-        try
-        {
-            Thread.sleep(millis);
-        }
-        catch ( InterruptedException e )
-        {
-            e.printStackTrace();
-        }
-        return "OK";
-    }
-
-    public static void raiseReturnException(Object value) {
-        throw new ReturnException( value );
     }
 
     public static long millisBetween(LocalDateTime earlier, LocalDateTime later) {
@@ -110,12 +78,5 @@ public class BrowserELFunctions
             from = from.plusDays( 1 );
         }
         return dates;
-    }
-
-    public static void ifThen( LambdaExpression test, LambdaExpression thenOperation )
-    {
-        if ((Boolean)test.invoke(  ) ) {
-            thenOperation.invoke(  );
-        }
     }
 }
