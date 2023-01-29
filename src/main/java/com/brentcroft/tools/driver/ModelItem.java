@@ -1,5 +1,7 @@
 package com.brentcroft.tools.driver;
 
+import com.brentcroft.tools.el.ELTemplateManager;
+import com.brentcroft.tools.el.Parented;
 import com.brentcroft.tools.el.SimpleELResolver;
 import com.brentcroft.tools.el.ThreadLocalStackELResolver;
 import com.brentcroft.tools.jstl.JstlTemplateManager;
@@ -11,7 +13,7 @@ import org.openqa.selenium.WebDriver;
 import java.util.Map;
 import java.util.Optional;
 
-public class ModelItem extends AbstractModelItem implements ModelElement
+public class ModelItem extends AbstractModelItem implements ModelElement, Parented
 {
     private static final JstlTemplateManager jstl = new JstlTemplateManager();
 
@@ -19,18 +21,12 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     {
         try
         {
-            jstl
-                    .getELTemplateManager()
-                    .addPrimaryResolvers(
-                            new ThreadLocalStackELResolver( AbstractModelItem.scopeStack ) );
-            jstl
-                    .getELTemplateManager()
-                    .addSecondaryResolvers(
-                            new SimpleELResolver( AbstractModelItem.staticModel ) );
-            BrowserELFunctions
-                    .install( jstl.getELTemplateManager() );
+            ELTemplateManager em = jstl.getELTemplateManager();
+            em.addPrimaryResolvers( new ThreadLocalStackELResolver( em, em, AbstractModelItem.scopeStack ) );
+            em.addSecondaryResolvers( new SimpleELResolver( AbstractModelItem.staticModel ) );
+            BrowserELFunctions.install( em );
         }
-        catch ( NoSuchMethodException e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
