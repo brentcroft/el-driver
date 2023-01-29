@@ -8,7 +8,6 @@ import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
 import org.openqa.selenium.WebDriver;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,14 +15,18 @@ public class ModelItem extends AbstractModelItem implements ModelElement
 {
     private static final JstlTemplateManager jstl = new JstlTemplateManager();
 
-    static {
+    static
+    {
         try
         {
             jstl
                     .getELTemplateManager()
-                    .addResolvers(
-                            new ThreadLocalStackELResolver( AbstractModelItem.scopeStack),
-                            new SimpleELResolver( AbstractModelItem.staticModel  ) );
+                    .addPrimaryResolvers(
+                            new ThreadLocalStackELResolver( AbstractModelItem.scopeStack ) );
+            jstl
+                    .getELTemplateManager()
+                    .addSecondaryResolvers(
+                            new SimpleELResolver( AbstractModelItem.staticModel ) );
             BrowserELFunctions
                     .install( jstl.getELTemplateManager() );
         }
@@ -33,7 +36,6 @@ public class ModelItem extends AbstractModelItem implements ModelElement
         }
     }
 
-
     @Override
     public Class< ? extends Model > getModelClass()
     {
@@ -41,11 +43,10 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     }
 
     @Override
-    public Map<String, Object> newContainer() {
-        MapBindings bindings = new MapBindings(this);
-        bindings.put( "$local", getScopeStack().isEmpty()
-                                ? new HashMap<>()
-                                : getScopeStack().peek() );
+    public Map< String, Object > newContainer()
+    {
+        MapBindings bindings = new MapBindings( this );
+        bindings.put( "$local", getScopeStack().peek() );
         bindings.put( "$self", this );
         bindings.put( "$parent", getParent() );
         bindings.put( "$static", getStaticModel() );
@@ -71,14 +72,15 @@ public class ModelItem extends AbstractModelItem implements ModelElement
     }
 
     @Override
-    public Browser getBrowser() {
+    public Browser getBrowser()
+    {
         return Optional
-                .ofNullable(getRoot())
+                .ofNullable( getRoot() )
                 // the root should have overridden
                 // this method to supply an actual Browser
                 .filter( p -> p != this )
                 .filter( p -> p instanceof ModelItem )
-                .map( p -> ((ModelItem)p).getBrowser())
-                .orElseThrow(() -> new IllegalArgumentException("No WebDriver available!"));
+                .map( p -> ( ( ModelItem ) p ).getBrowser() )
+                .orElseThrow( () -> new IllegalArgumentException( "No WebDriver available!" ) );
     }
 }
