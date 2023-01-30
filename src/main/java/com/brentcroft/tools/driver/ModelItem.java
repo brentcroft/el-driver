@@ -1,9 +1,6 @@
 package com.brentcroft.tools.driver;
 
-import com.brentcroft.tools.el.ELTemplateManager;
-import com.brentcroft.tools.el.Parented;
-import com.brentcroft.tools.el.SimpleMapELResolver;
-import com.brentcroft.tools.el.ThreadLocalStackELResolver;
+import com.brentcroft.tools.el.*;
 import com.brentcroft.tools.jstl.JstlTemplateManager;
 import com.brentcroft.tools.jstl.MapBindings;
 import com.brentcroft.tools.model.AbstractModelItem;
@@ -23,7 +20,9 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
         {
             ELTemplateManager em = jstl.getELTemplateManager();
             em.addPrimaryResolvers( new ThreadLocalStackELResolver( em, em, AbstractModelItem.scopeStack ) );
-            em.addSecondaryResolvers( new SimpleMapELResolver( AbstractModelItem.staticModel ) );
+            em.addSecondaryResolvers(
+                    new ConditionalMethodsELResolver(em.getELContextFactory(), AbstractModelItem.scopeStack),
+                    new SimpleMapELResolver( AbstractModelItem.staticModel ) );
             BrowserELFunctions.install( em );
         }
         catch ( Exception e )
