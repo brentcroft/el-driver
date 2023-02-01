@@ -244,6 +244,13 @@ public interface ModelElement
     default ModelElement setText( CharSequence... keys) {
         getWebElement().sendKeys( Keys.chord(Keys.CONTROL, "a"));
         getWebElement().sendKeys( Keys.DELETE);
+        if (keys != null && keys.length > 0) {
+            getWebElement().sendKeys( keys);
+        }
+        getSelf().maybeDelay();
+        return this;
+    }
+    default ModelElement sendKeys( CharSequence... keys) {
         getWebElement().sendKeys( keys);
         getSelf().maybeDelay();
         return this;
