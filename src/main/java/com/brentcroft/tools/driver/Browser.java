@@ -98,7 +98,7 @@ public class Browser
 
     public void quitDriver() {
         if ( webDriver != null && (isAutoQuit() || isHeadless())) {
-            System.out.printf( "Quitting driver: auto=%s, headless=%s%n", isAutoQuit(), isHeadless());
+            System.out.printf( "Quitting driver: auto=%s, headless=%s, after-all=%s%n", isAutoQuit(), isHeadless(), isQuitAfterAll());
             webDriver.quit();
             webDriver = null;
         }

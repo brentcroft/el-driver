@@ -21,13 +21,7 @@ public class BrowserELFunctions
                         "nextWorkingDay",
                         BrowserELFunctions.class.getMethod("nextWorkingDay", LocalDateTime.class) );
 
-        el.mapFunction(
-                        "millisBetween",
-                        BrowserELFunctions.class.getMethod("millisBetween", LocalDateTime.class, LocalDateTime.class) );
 
-        el.mapFunction(
-                        "dateRange",
-                        BrowserELFunctions.class.getMethod("dateRange", LocalDateTime.class, LocalDateTime.class) );
     }
 
     public static void inspect( Map< String, ? > model, String steps) {
@@ -37,9 +31,6 @@ public class BrowserELFunctions
         inspector.setVisible( true );
     }
 
-    public static long millisBetween(LocalDateTime earlier, LocalDateTime later) {
-        return earlier.until( later, ChronoUnit.MILLIS );
-    }
 
     public static LocalDateTime nextWorkingDay(LocalDateTime candidate) {
         if (candidate.getHour() < 9) {
@@ -59,24 +50,4 @@ public class BrowserELFunctions
         return candidate;
     }
 
-    public static boolean isWorkingDay(LocalDateTime candidate) {
-        switch (candidate.getDayOfWeek()) {
-            case SATURDAY:
-            case SUNDAY:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    public static List< LocalDateTime > dateRange(LocalDateTime from, LocalDateTime to) {
-        List< LocalDateTime > dates = new ArrayList<>();
-        while (!from.isAfter( to )) {
-            if (isWorkingDay(from)) {
-                dates.add( from );
-            }
-            from = from.plusDays( 1 );
-        }
-        return dates;
-    }
 }

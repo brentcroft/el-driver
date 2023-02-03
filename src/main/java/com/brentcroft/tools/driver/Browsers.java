@@ -45,7 +45,6 @@ public class Browsers extends HashMap<String, Browser>
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         });
     }
 }
