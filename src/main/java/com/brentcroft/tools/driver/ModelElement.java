@@ -265,6 +265,11 @@ public interface ModelElement
         getSelf().maybeDelay();
         return this;
     }
+    default ModelElement space() {
+        getWebElement().sendKeys( Keys.SPACE);
+        getSelf().maybeDelay();
+        return this;
+    }
     default ModelElement selectByText(String text) {
         volatileElement( (i,e) -> new Select(e).selectByVisibleText( text ) );
         getSelf().maybeDelay();
@@ -283,6 +288,12 @@ public interface ModelElement
 
     default ModelElement setAttribute(String key, Object value) {
         String script = format("arguments[0].setAttribute( '%s', '%s' )", key, value);
+        ((JavascriptExecutor)getWebDriver()).executeScript( script, getWebElement() );
+        return this;
+    }
+
+    default ModelElement setStyleAttribute(String key, Object value) {
+        String script = format("arguments[0].style.%s = '%s'", key, value);
         ((JavascriptExecutor)getWebDriver()).executeScript( script, getWebElement() );
         return this;
     }

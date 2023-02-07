@@ -5,6 +5,7 @@ import com.brentcroft.tools.jstl.JstlTemplateManager;
 import com.brentcroft.tools.jstl.MapBindings;
 import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Map;
@@ -24,6 +25,12 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
                     new ConditionalMethodsELResolver(em.getELContextFactory(), AbstractModelItem.scopeStack),
                     new SimpleMapELResolver( AbstractModelItem.staticModel ) );
             BrowserELFunctions.install( em );
+
+            //
+            em
+                    .getELContextFactory()
+                    .getImportHandler()
+                    .importClass( Keys.class.getTypeName() );
         }
         catch ( Exception e )
         {
