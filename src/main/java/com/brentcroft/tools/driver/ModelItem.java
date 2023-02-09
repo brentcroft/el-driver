@@ -20,17 +20,33 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
         try
         {
             ELTemplateManager em = jstl.getELTemplateManager();
-            em.addPrimaryResolvers( new ThreadLocalStackELResolver( em, em, AbstractModelItem.scopeStack ) );
-            em.addSecondaryResolvers(
-                    new ConditionalMethodsELResolver(em.getELContextFactory(), AbstractModelItem.scopeStack),
-                    new SimpleMapELResolver( AbstractModelItem.staticModel ) );
-            BrowserELFunctions.install( em );
 
-            //
+            em.addPrimaryResolvers(
+                    new ThreadLocalStackELResolver(
+                            em,
+                            em,
+                            AbstractModelItem.scopeStack,
+                            AbstractModelItem.staticModel
+                    )
+            );
+
+            em.addSecondaryResolvers(
+                    new ConditionalMethodsELResolver(
+                            em.getELContextFactory(),
+                            AbstractModelItem.scopeStack,
+                            AbstractModelItem.staticModel
+                    ),
+                    new SimpleMapELResolver(
+                            AbstractModelItem.staticModel
+                    )
+            );
+
             em
                     .getELContextFactory()
                     .getImportHandler()
                     .importClass( Keys.class.getTypeName() );
+
+            BrowserELFunctions.install( em );
         }
         catch ( Exception e )
         {
