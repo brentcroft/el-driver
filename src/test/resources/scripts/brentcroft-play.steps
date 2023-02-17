@@ -1,0 +1,23 @@
+
+# create a new browser
+Browsers.instance().put( 'xyz', Browser() );
+
+# assign a lambda
+xyz.greeting = ( message ) -> c:println( message );
+
+# test the lambda
+xyz.greeting( 'Hello world' );
+
+# put another lambda as a runnable
+xyz.browser.afters.put(
+    '#@*&&^%£$%',
+    () -> xyz.greeting( 'good bye cruel world' )
+);
+
+# put another lambda as a runnable
+xyz.browser.afterAlls.put(
+    '*&^%*&^%*^',
+    () -> xyz.greeting( 'good bye uncaring universe' )
+);
+
+'ok'

@@ -5,7 +5,10 @@ import com.brentcroft.tools.jstl.JstlTemplateManager;
 import com.brentcroft.tools.jstl.MapBindings;
 import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
+import jakarta.el.ImportHandler;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Map;
@@ -13,7 +16,7 @@ import java.util.Optional;
 
 public class ModelItem extends AbstractModelItem implements ModelElement, Parented
 {
-    private static final JstlTemplateManager jstl = new JstlTemplateManager();
+    protected static final JstlTemplateManager jstl = new JstlTemplateManager();
 
     static
     {
@@ -41,10 +44,16 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
                     )
             );
 
-            em
+            ImportHandler ih = em
                     .getELContextFactory()
-                    .getImportHandler()
-                    .importClass( Keys.class.getTypeName() );
+                    .getImportHandler();
+
+            ih.importClass( Keys.class.getTypeName() );
+            ih.importClass( Point.class.getTypeName() );
+            ih.importClass( Dimension.class.getTypeName() );
+
+            ih.importClass( Browser.class.getTypeName() );
+            ih.importClass( Browsers.class.getTypeName() );
 
             BrowserELFunctions.install( em );
         }
@@ -69,6 +78,10 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
         bindings.put( "$parent", getParent() );
         bindings.put( "$static", getStaticModel() );
         return bindings;
+    }
+
+    public ELTemplateManager getELTemplateManager() {
+        return jstl.getELTemplateManager();
     }
 
     @Override

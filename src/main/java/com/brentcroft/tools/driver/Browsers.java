@@ -1,5 +1,8 @@
 package com.brentcroft.tools.driver;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Browsers extends HashMap<String, Browser>
@@ -46,5 +49,35 @@ public class Browsers extends HashMap<String, Browser>
                 e.printStackTrace();
             }
         });
+    }
+
+    public Object execute( String steps) {
+        return defaultBrowser
+                .getPageModel()
+                .steps( steps );
+    }
+
+
+    public Object executeFile( String filename) throws IOException
+    {
+        String steps = String
+                .join( "\n", Files
+                .readAllLines( Paths.get( filename ) ) );
+
+        return execute( steps );
+    }
+
+    public static void main(String[] args) throws IOException
+    {
+        if (args == null || args.length < 1) {
+            throw new IllegalArgumentException("Must supply a steps file");
+        }
+
+        try {
+            instance().executeFile( args[0] );
+        } finally {
+            instance().close();
+            instance().closeCompletely();
+        }
     }
 }

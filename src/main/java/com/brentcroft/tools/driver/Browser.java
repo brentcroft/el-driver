@@ -3,7 +3,10 @@ package com.brentcroft.tools.driver;
 import com.brentcroft.tools.model.ModelEvent;
 import lombok.Getter;
 import lombok.Setter;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -33,126 +36,161 @@ public class Browser
     private WebDriver webDriver;
     private final PageModel pageModel = new PageModel();
 
-    private final Stack<Long> delayStack = new Stack<>();
-    private final Stack<Long> implicitWaitStack = new Stack<>();
+    private final Stack< Long > delayStack = new Stack<>();
+    private final Stack< Long > implicitWaitStack = new Stack<>();
 
-    private final Map<String, Runnable> beforeAlls = new HashMap<String, Runnable>() {
-        public Runnable put(String key, Runnable action){
-            if (!containsKey( key )) {
-                super.put(key, action );
+    private final Map< String, Runnable > beforeAlls = new HashMap< String, Runnable >()
+    {
+        public Runnable put( String key, Runnable action )
+        {
+            if ( ! containsKey( key ) )
+            {
+                super.put( key, action );
                 action.run();
             }
             return null;
         }
     };
-    private final Map<String, Runnable> afters = new LinkedHashMap<>();
-    private final Map<String, Runnable> afterAlls = new LinkedHashMap<>();
+    private final Map< String, Runnable > afters = new LinkedHashMap<>();
+    private final Map< String, Runnable > afterAlls = new LinkedHashMap<>();
 
-    public Browser() {
+    public Browser()
+    {
         pageModel.setBrowser( this );
     }
 
-    public void close() {
-        try {
+    public void close()
+    {
+        try
+        {
             afters
-                    .forEach( (script, after) -> {
-                        try {
+                    .forEach( ( script, after ) -> {
+                        try
+                        {
                             after.run();
-                        } catch (Exception e) {
+                        }
+                        catch ( Exception e )
+                        {
                             getPageModel()
                                     .notifyModelEvent(
                                             ModelEvent
                                                     .EventType
                                                     .EXCEPTION
-                                                    .newEvent(getPageModel(), format("Error running after: %s; %s", script, e), e) );
+                                                    .newEvent( getPageModel(), format( "Error running after: %s; %s", script, e ), e ) );
                         }
                     } );
             afters.clear();
-        } finally {
-            if (!quitAfterAll) {
+        }
+        finally
+        {
+            if ( ! quitAfterAll )
+            {
                 quitDriver();
             }
         }
     }
 
-    public void closeCompletely() {
-        try {
+    public void closeCompletely()
+    {
+        try
+        {
             afterAlls
-                    .forEach( (script, after) -> {
-                        try {
+                    .forEach( ( script, after ) -> {
+                        try
+                        {
                             after.run();
-                        } catch (Exception e) {
+                        }
+                        catch ( Exception e )
+                        {
                             getPageModel()
                                     .notifyModelEvent(
                                             ModelEvent
                                                     .EventType
                                                     .EXCEPTION
-                                                    .newEvent(getPageModel(), format("Error running after all: %s; %s", script, e), e) );
+                                                    .newEvent( getPageModel(), format( "Error running after all: %s; %s", script, e ), e ) );
                         }
                     } );
             afterAlls.clear();
-        } finally {
+        }
+        finally
+        {
             quitDriver();
         }
     }
 
-    public void quitDriver() {
-        if ( webDriver != null && (isAutoQuit() || isHeadless())) {
-            System.out.printf( "Quitting driver: auto=%s, headless=%s, after-all=%s%n", isAutoQuit(), isHeadless(), isQuitAfterAll());
+    public void quitDriver()
+    {
+        if ( webDriver != null && ( isAutoQuit() || isHeadless() ) )
+        {
+            System.out.printf( "Quitting driver: auto=%s, headless=%s, after-all=%s%n", isAutoQuit(), isHeadless(), isQuitAfterAll() );
             webDriver.quit();
             webDriver = null;
         }
     }
 
-    public void open() {
-        if ( webDriver != null ) {
-        } else if (!pageModel.containsKey( "$driverPath" )) {
+    public void open()
+    {
+        if ( webDriver != null )
+        {
+        }
+        else if ( ! pageModel.containsKey( "$driverPath" ) )
+        {
             throw new IllegalArgumentException( "PageModel does not contain: $driverPath" );
 
-        } else if (!pageModel.containsKey( "$driverModel" )) {
+        }
+        else if ( ! pageModel.containsKey( "$driverModel" ) )
+        {
             throw new IllegalArgumentException( "PageModel does not contain: $driverModel" );
 
-        } else if (!pageModel.containsKey( "$downloadDir" )) {
+        }
+        else if ( ! pageModel.containsKey( "$downloadDir" ) )
+        {
             throw new IllegalArgumentException( "PageModel does not contain: $downloadDir" );
 
-        } else {
+        }
+        else
+        {
 
-            if (pageModel.containsKey( "$allowInteractive" ))
+            if ( pageModel.containsKey( "$allowInteractive" ) )
             {
                 allowInteractive = Boolean.parseBoolean( pageModel.get( "$allowInteractive" ).toString() );
             }
 
-            if (pageModel.containsKey( "$headless" ))
+            if ( pageModel.containsKey( "$headless" ) )
             {
                 headless = Boolean.parseBoolean( pageModel.get( "$headless" ).toString() );
-                if (headless) {
+                if ( headless )
+                {
                     allowInteractive = false;
                 }
             }
 
-            if (pageModel.containsKey( "$downloadDir" )) {
-                File downloadFile = new File( pageModel.get( "$downloadDir" ).toString());
-                if (!downloadFile.exists()|| !downloadFile.isDirectory()) {
-                    throw new IllegalArgumentException(format("Either the directory does not exist or it's not a directory: $downloadDir: %s", downloadFile));
+            if ( pageModel.containsKey( "$downloadDir" ) )
+            {
+                File downloadFile = new File( pageModel.get( "$downloadDir" ).toString() );
+                if ( ! downloadFile.exists() || ! downloadFile.isDirectory() )
+                {
+                    throw new IllegalArgumentException( format( "Either the directory does not exist or it's not a directory: $downloadDir: %s", downloadFile ) );
                 }
-                downloads.setDirectory(downloadFile);
+                downloads.setDirectory( downloadFile );
             }
 
-            String driverPath = (String)pageModel.get("$driverPath");
-            String driverModel = (String)pageModel.get("$driverModel");
+            String driverPath = ( String ) pageModel.get( "$driverPath" );
+            String driverModel = ( String ) pageModel.get( "$driverModel" );
 
-            Map<String,Object> prefs = new HashMap<>();
+            Map< String, Object > prefs = new HashMap<>();
             prefs.put( "download.default_directory", downloads.getDownloadPath() );
             prefs.put( "download.prompt_for_download", false );
 
-            switch (driverModel) {
+            switch ( driverModel )
+            {
                 case "chrome":
                     ChromeOptions chromeOptions = new ChromeOptions();
                     chromeOptions.setHeadless( headless );
                     chromeOptions.addArguments( "--disable-extensions" );
                     chromeOptions.setExperimentalOption( "prefs", prefs );
                     System.setProperty( "webdriver.chrome.driver", driverPath );
-                    webDriver = new ChromeDriver(chromeOptions);
+                    webDriver = new ChromeDriver( chromeOptions );
                     break;
 
                 case "edge":
@@ -161,13 +199,13 @@ public class Browser
                     edgeOptions.addArguments( "--disable-extensions" );
                     edgeOptions.setExperimentalOption( "prefs", prefs );
                     System.setProperty( "webdriver.edge.driver", driverPath );
-                    webDriver = new EdgeDriver(edgeOptions);
+                    webDriver = new EdgeDriver( edgeOptions );
                     break;
 
                 case "safari":
                     SafariOptions safariOptions = new SafariOptions();
                     System.setProperty( "webdriver.safari.driver", driverPath );
-                    webDriver = new SafariDriver(safariOptions);
+                    webDriver = new SafariDriver( safariOptions );
                     break;
 
                 default:
@@ -175,7 +213,7 @@ public class Browser
             }
         }
 
-        if (pageModel.containsKey( "$quitAfterAll" ))
+        if ( pageModel.containsKey( "$quitAfterAll" ) )
         {
             quitAfterAll = Boolean.parseBoolean( pageModel.get( "$quitAfterAll" ).toString() );
         }
@@ -194,49 +232,63 @@ public class Browser
 
         webDriver.manage().timeouts().implicitlyWait( Duration.ofMillis( getImplicitWait() ) );
 
-        webDriver.get( (String)pageModel.get("$url"));
+        webDriver.get( ( String ) pageModel.get( "$url" ) );
 
-        if (pageModel.containsKey( "$position" )) {
-            String position = (String)pageModel.get("$position");
+        if ( pageModel.containsKey( "$position" ) )
+        {
+            String position = ( String ) pageModel.get( "$position" );
             int[] coords = Stream
-                    .of(position.split("\\s*,\\s*"))
+                    .of( position.split( "\\s*,\\s*" ) )
                     .mapToInt( Integer::parseInt )
                     .toArray();
-            if (coords.length < 4) {
+            if ( coords.length < 4 )
+            {
                 throw new IllegalArgumentException( "$position must be q comma separated list of 4 integers." );
             }
-            Point point = new Point(coords[0], coords[1]);
+            Point point = new Point( coords[ 0 ], coords[ 1 ] );
             webDriver.manage().window().setPosition( point );
 
-            Dimension dimension = new Dimension(coords[2], coords[3]);
+            Dimension dimension = new Dimension( coords[ 2 ], coords[ 3 ] );
             webDriver.manage().window().setSize( dimension );
         }
-        if (pageModel.containsKey( "$maximize" ) && Boolean.parseBoolean( (String)pageModel.get( "$maximize" )))
+        if ( pageModel.containsKey( "$maximize" ) && Boolean.parseBoolean( ( String ) pageModel.get( "$maximize" ) ) )
         {
             webDriver.manage().window().maximize();
         }
     }
 
-    public void executeScript( String script, List<Object> args ) {
-        (( JavascriptExecutor )webDriver).executeScript( script, args.toArray() );
+    public void executeScript( String script, List< Object > args )
+    {
+        ( ( JavascriptExecutor ) webDriver ).executeScript( script, args.toArray() );
     }
 
-    public void setDelay( long delayMillis) {
+    public void setDelay( long delayMillis )
+    {
         getDelayStack().push( delayMillis );
     }
-    public void resetDelay() {
+
+    public void resetDelay()
+    {
         getDelayStack().pop();
     }
-    public long getDelay() {
+
+    public long getDelay()
+    {
         return getDelayStack().peek();
     }
-    public void setImplicitWait( long implicitWaitMillis) {
+
+    public void setImplicitWait( long implicitWaitMillis )
+    {
         getImplicitWaitStack().push( implicitWaitMillis );
     }
-    public void resetImplicitWait() {
+
+    public void resetImplicitWait()
+    {
         getImplicitWaitStack().pop();
     }
-    public long getImplicitWait() {
+
+    public long getImplicitWait()
+    {
         return getImplicitWaitStack().peek();
     }
 }
