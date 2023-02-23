@@ -3,10 +3,7 @@ package com.brentcroft.tools.driver;
 import com.brentcroft.tools.model.ModelEvent;
 import lombok.Getter;
 import lombok.Setter;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -15,6 +12,11 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Stream;
@@ -28,10 +30,12 @@ public class Browser
     private static final double DEFAULT_DELAY_SECONDS = 0.1;
     private static final double DEFAULT_IMPLICIT_WAIT_SECONDS = 5;
     private Downloads downloads = new Downloads();
+    private static int screenshotId = 0;
     private boolean autoQuit = true;
     private boolean quitAfterAll = false;
     private boolean allowInteractive = true;
     private boolean headless = false;
+    private String screenshotDirectory = "target/screenshots";
 
     private WebDriver webDriver;
     private final PageModel pageModel = new PageModel();
@@ -290,5 +294,36 @@ public class Browser
     public long getImplicitWait()
     {
         return getImplicitWaitStack().peek();
+    }
+
+    public void saveScreenshot()
+    {
+        if (webDriver == null) {
+            return;
+        }
+
+        String filename = format("screenshot-%s.jpg", screenshotId++);
+
+        File tempScreenshot = (( TakesScreenshot )webDriver).getScreenshotAs( OutputType.FILE );
+        Path targetScreenshot = Paths.get(screenshotDirectory, filename);
+
+        if (!targetScreenshot.toFile().getParentFile().mkdirs()) {
+            System.out.printf( "Failed to make screenshot directories: %s%n", screenshotDirectory);
+        }
+
+        try
+        {
+            Files.copy(tempScreenshot.toPath(), targetScreenshot, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.printf( "Saved screenshot: %s%n", targetScreenshot);
+
+            if (!tempScreenshot.delete() ) {
+                System.out.printf( "Failed to delete temp screenshot: %s%n", tempScreenshot);
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new IllegalArgumentException(format("Failed to copy screenshot: %s", targetScreenshot), e);
+        }
     }
 }

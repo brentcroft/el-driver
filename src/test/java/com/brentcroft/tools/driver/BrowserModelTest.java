@@ -42,14 +42,14 @@ public class BrowserModelTest
         pageModel.appendFromJson( "{ '$json': 'jakarta-el.json' }" );
         bm.open();
 
-        assertEquals(true, pageModel.eval( "packages.lambdaExpression.exists()" ) );
-        assertEquals(false, pageModel.eval( "classes.lambdaExpression.exists()" ) );
+        assertEquals(true, pageModel.eval( "packages.javaxScript.exists()" ) );
+        pageModel.eval( "packages.javaxScript.click()" );
 
-        pageModel.eval( "packages.lambdaExpression.click()" );
+        assertEquals(true, pageModel.eval( "package.scriptEngineManager.exists()" ) );
+        pageModel.eval( "package.scriptEngineManager.click()" );
 
         assertEquals(true, pageModel.eval( "classes.exists()" ) );
-        assertEquals(true, pageModel.eval( "classes.header.containsText( 'LambdaExpression' )" ) );
-        assertEquals(true, pageModel.eval( "classes.lambdaExpression.exists()" ) );
+        assertEquals(true, pageModel.eval( "classes.scriptEngineManager.exists()" ) );
     }
 
     @Test
@@ -66,6 +66,8 @@ public class BrowserModelTest
         assertFalse( (Boolean) pageModel
                 .whileDo( expected, operation, 100 )
                 .eval( expected ) );
+
+        pageModel.getBrowser().saveScreenshot();
     }
 
     @Test
