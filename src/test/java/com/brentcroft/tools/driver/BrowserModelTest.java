@@ -60,14 +60,14 @@ public class BrowserModelTest
         pageModel.steps( "newGameButton.assertExists(); stepButton.assertExists(); gamePlay.assertExists(); stack.assertNotExists()" );
         pageModel.steps( "newGameButton.click(); stack.assertExists()" );
 
+        pageModel.eval( "$self.whileDo( () -> !stack.equalsText('Stack size: 0'), () -> stepButton.click(), 100 )" );
+
         String expected = "!stack.equalsText('Stack size: 0')";
-        String operation = "stepButton.click()";
 
         assertFalse( (Boolean) pageModel
-                .whileDo( expected, operation, 100 )
                 .eval( expected ) );
 
-        pageModel.getBrowser().saveScreenshot();
+        pageModel.getBrowser().saveScreenshot("stack size is zero");
     }
 
     @Test

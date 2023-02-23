@@ -297,34 +297,37 @@ public class Browser
         return getImplicitWaitStack().peek();
     }
 
-    public void saveScreenshot()
+    public void saveScreenshot( String key )
     {
-        if (webDriver == null) {
+        if ( webDriver == null )
+        {
             return;
         }
 
-        String filename = format("screenshot-%4d.jpg", screenshotId++);
+        String filename = format( "screenshot-%05d-%s.jpg", screenshotId++, key );
 
-        File tempScreenshot = (( TakesScreenshot )webDriver).getScreenshotAs( OutputType.FILE );
-        Path targetScreenshot = Paths.get(screenshotDirectory, filename);
+        File tempScreenshot = ( ( TakesScreenshot ) webDriver ).getScreenshotAs( OutputType.FILE );
+        Path targetScreenshot = Paths.get( screenshotDirectory, filename );
 
-        if (!targetScreenshot.toFile().getParentFile().mkdirs()) {
-            System.out.printf( "Failed to make screenshot directories: %s%n", screenshotDirectory);
+        if ( ! targetScreenshot.toFile().getParentFile().mkdirs() )
+        {
+            // ignored
         }
 
         try
         {
-            Files.copy(tempScreenshot.toPath(), targetScreenshot, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy( tempScreenshot.toPath(), targetScreenshot, StandardCopyOption.REPLACE_EXISTING );
 
-            System.out.printf( "Saved screenshot: %s%n", targetScreenshot);
+            System.out.printf( "Saved screenshot: %s%n", targetScreenshot );
 
-            if (!tempScreenshot.delete() ) {
-                System.out.printf( "Failed to delete temp screenshot: %s%n", tempScreenshot);
+            if ( ! tempScreenshot.delete() )
+            {
+                System.out.printf( "Failed to delete temp screenshot: %s%n", tempScreenshot );
             }
         }
         catch ( IOException e )
         {
-            throw new IllegalArgumentException(format("Failed to copy screenshot: %s", targetScreenshot), e);
+            throw new IllegalArgumentException( format( "Failed to copy screenshot: %s", targetScreenshot ), e );
         }
     }
 }
