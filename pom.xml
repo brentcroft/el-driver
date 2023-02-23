@@ -38,7 +38,7 @@
 	</scm>
 
 	<properties>
-		<el-plates.version>01.02.21</el-plates.version>
+		<el-plates.version>01.02.22</el-plates.version>
 		<el-model.version>01.01.24</el-model.version>
 		<selenium.version>4.7.2</selenium.version>
 		<junit.version>4.13.2</junit.version>
