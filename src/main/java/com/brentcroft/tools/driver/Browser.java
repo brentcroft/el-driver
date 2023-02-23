@@ -140,21 +140,17 @@ public class Browser
         else if ( ! pageModel.containsKey( "$driverPath" ) )
         {
             throw new IllegalArgumentException( "PageModel does not contain: $driverPath" );
-
         }
         else if ( ! pageModel.containsKey( "$driverModel" ) )
         {
             throw new IllegalArgumentException( "PageModel does not contain: $driverModel" );
-
         }
         else if ( ! pageModel.containsKey( "$downloadDir" ) )
         {
             throw new IllegalArgumentException( "PageModel does not contain: $downloadDir" );
-
         }
         else
         {
-
             if ( pageModel.containsKey( "$allowInteractive" ) )
             {
                 allowInteractive = Boolean.parseBoolean( pageModel.get( "$allowInteractive" ).toString() );
@@ -221,6 +217,11 @@ public class Browser
         {
             quitAfterAll = Boolean.parseBoolean( pageModel.get( "$quitAfterAll" ).toString() );
         }
+        if ( pageModel.containsKey( "$screenshotDirectory" ) )
+        {
+            screenshotDirectory = pageModel.get( "$screenshotDirectory" ).toString();
+        }
+
         {
             double delaySeconds = pageModel.containsKey( "$delay" )
                                   ? Double.parseDouble( pageModel.get( "$delay" ).toString() )
@@ -302,7 +303,7 @@ public class Browser
             return;
         }
 
-        String filename = format("screenshot-%s.jpg", screenshotId++);
+        String filename = format("screenshot-%4d.jpg", screenshotId++);
 
         File tempScreenshot = (( TakesScreenshot )webDriver).getScreenshotAs( OutputType.FILE );
         Path targetScreenshot = Paths.get(screenshotDirectory, filename);
