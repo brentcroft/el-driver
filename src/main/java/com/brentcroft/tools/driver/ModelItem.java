@@ -25,24 +25,18 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
             ELTemplateManager em = jstl.getELTemplateManager();
 
             em.addPrimaryResolvers(
-                    new ThreadLocalStackELResolver(
+                    new MapStepsELResolver(
                             em,
                             em,
-                            AbstractModelItem.scopeStack,
-                            AbstractModelItem.staticModel
-                    )
-            );
+                            AbstractModelItem.staticModel ) );
 
             em.addSecondaryResolvers(
                     new ConditionalMethodsELResolver(
                             em.getELContextFactory(),
                             AbstractModelItem.scopeStack,
-                            AbstractModelItem.staticModel
-                    ),
+                            AbstractModelItem.staticModel),
                     new SimpleMapELResolver(
-                            AbstractModelItem.staticModel
-                    )
-            );
+                            AbstractModelItem.staticModel ) );
 
             ImportHandler ih = em
                     .getELContextFactory()
