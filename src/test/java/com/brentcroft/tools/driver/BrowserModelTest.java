@@ -13,8 +13,7 @@ import static org.junit.Assert.*;
 
 public class BrowserModelTest
 {
-    private static final Browser bm = new Browser( );
-    private final PageModel pageModel = bm.getPageModel();
+    private final PageModel pageModel = Browsers.newBrowser( "alfredo" );
 
     @Before
     public void installPageModel() {
@@ -23,13 +22,13 @@ public class BrowserModelTest
 
     @After
     public void runsAfters() {
-        bm.close();
+        Browsers.instance().close();
     }
 
     @Test
     public void loadsBrentcroftJBNDTestSite() {
         pageModel.appendFromJson( "{ '$json': 'brentcroft-jbnd-test.json' }" );
-        bm.open();
+        pageModel.getBrowser().open();
 
         String expected = "((4:2)|5)";
         pageModel.eval( format("scriptText.setText( '%s' ) ; eval.click()",expected) );
@@ -40,7 +39,7 @@ public class BrowserModelTest
     @Test
     public void loadsJakartaELSite() {
         pageModel.appendFromJson( "{ '$json': 'jakarta-el.json' }" );
-        bm.open();
+        pageModel.getBrowser().open();
 
         assertEquals(true, pageModel.eval( "packages.javaxScript.exists()" ) );
         pageModel.eval( "packages.javaxScript.click()" );
@@ -55,7 +54,7 @@ public class BrowserModelTest
     @Test
     public void loadsBrentcroftGameSite() {
         pageModel.appendFromJson( "{ '$json': 'brentcroft-games.json' }" );
-        bm.open();
+        pageModel.getBrowser().open();
 
         pageModel.steps( "newGameButton.assertExists(); stepButton.assertExists(); gamePlay.assertExists(); stack.assertNotExists()" );
         pageModel.steps( "newGameButton.click(); stack.assertExists()" );
@@ -73,19 +72,21 @@ public class BrowserModelTest
     @Test
     public void playsBrentcroftGameSite() {
         pageModel.appendFromJson( "{ '$json': 'brentcroft-games.json' }" );
-        bm.open();
+        pageModel.getBrowser().open();
 
         pageModel.steps("$self.run()");
         assertTrue( (Boolean) pageModel.eval( "stack.equalsText('Stack size: 0')" ) );
 
-        //pageModel.steps("c:inspect($self,'')");
+        Browsers
+                .instance()
+                .saveScreenshots("stack size is zero");
     }
 
 
     @Test
     public void playsBrentcroftGameSiteXml() {
         pageModel.appendFromJson( "{ '$xml': 'brentcroft-site.xml' }" );
-        bm.open();
+        pageModel.getBrowser().open();
 
         assertTrue( (Boolean) pageModel.eval( "!shithead.exists()" ) );
 
@@ -98,7 +99,7 @@ public class BrowserModelTest
     @Test
     public void opensBrentcroftAnimalsCountSiteXml() {
         pageModel.appendFromJson( "{ '$xml': 'brentcroft-site.xml' }" );
-        bm.open();
+        pageModel.getBrowser().open();
 
 
         pageModel.whileDo( "!home.animalsCount.exists()","c:delay(100)", 100 );
@@ -115,7 +116,7 @@ public class BrowserModelTest
     @Ignore
     public void opensBrentcroftOnload() {
         pageModel.appendFromJson( "{ '$json': 'brentcroft-games.json', '$onload': '$self.run()' }" );
-        bm.open();
+        pageModel.getBrowser().open();
         assertTrue( (Boolean) pageModel.eval( "stack.equalsText('Stack size: 0')" ) );
     }
 

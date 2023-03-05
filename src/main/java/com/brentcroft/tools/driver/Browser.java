@@ -304,7 +304,10 @@ public class Browser
             return;
         }
 
-        String filename = format( "screenshot-%05d-%s.jpg", screenshotId++, key );
+        String filename = format(
+                "screenshot-%05d-%s.jpg",
+                screenshotId++,
+                key.replaceAll( " ", "-" ) );
 
         File tempScreenshot = ( ( TakesScreenshot ) webDriver ).getScreenshotAs( OutputType.FILE );
         Path targetScreenshot = Paths.get( screenshotDirectory, filename );

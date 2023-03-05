@@ -11,6 +11,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,7 +34,6 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
 
             em.addSecondaryResolvers(
                     new ConditionalMethodsELResolver(
-                            em.getELContextFactory(),
                             AbstractModelItem.scopeStack,
                             AbstractModelItem.staticModel),
                     new SimpleMapELResolver(
@@ -45,6 +46,9 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
             ih.importClass( Keys.class.getTypeName() );
             ih.importClass( Point.class.getTypeName() );
             ih.importClass( Dimension.class.getTypeName() );
+
+            ih.importClass( Paths.class.getTypeName() );
+            ih.importClass( File.class.getTypeName() );
 
             ih.importClass( Browser.class.getTypeName() );
             ih.importClass( Browsers.class.getTypeName() );

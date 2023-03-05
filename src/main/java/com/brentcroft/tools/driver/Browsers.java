@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import static java.lang.String.format;
+
 public class Browsers extends HashMap<String, Browser>
 {
     private static final Browsers instance = new Browsers();
@@ -19,14 +21,20 @@ public class Browsers extends HashMap<String, Browser>
         put( DEFAULT, defaultBrowser );
     }
 
-    public Browser put(String key, Browser browser) {
-        // static copies of all page models
-        browser.getPageModel().putStatic( key, browser.getPageModel() );
-        return super.put(key, browser);
+    public static PageModel newBrowser(String key) {
+        Browser browser = new Browser();
+        instance().put(key, browser);
+        return browser.getPageModel();
     }
 
     public Browser getDefaultBrowser() {
         return defaultBrowser;
+    }
+
+    public void saveScreenshots(String key) {
+        forEach((browserKey, browser) -> {
+            browser.saveScreenshot( format("%s-%s", browserKey, key) );
+        });
     }
 
     public void close() {
