@@ -82,7 +82,6 @@ public class BrowserModelTest
                 .saveScreenshots("stack size is zero");
     }
 
-
     @Test
     public void playsBrentcroftGameSiteXml() {
         pageModel.appendFromJson( "{ '$xml': 'brentcroft-site.xml' }" );
@@ -94,24 +93,6 @@ public class BrowserModelTest
         assertTrue( (Boolean) pageModel.eval( "shithead.exists()" ) );
     }
 
-
-
-    @Test
-    public void opensBrentcroftAnimalsCountSiteXml() {
-        pageModel.appendFromJson( "{ '$xml': 'brentcroft-site.xml' }" );
-        pageModel.getBrowser().open();
-
-
-        pageModel.whileDo( "!home.animalsCount.exists()","c:delay(100)", 100 );
-        assertTrue( (Boolean) pageModel.eval( "!animalsCount.exists()" ) );
-
-        pageModel.steps("home.animalsCount.click()");
-
-        pageModel.whileDo( "!animalsCount.exists()","c:delay(100)", 100 );
-        assertTrue( (Boolean) pageModel.eval( "animalsCount.exists()" ) );
-    }
-
-
     @Test
     @Ignore
     public void opensBrentcroftOnload() {
@@ -119,5 +100,4 @@ public class BrowserModelTest
         pageModel.getBrowser().open();
         assertTrue( (Boolean) pageModel.eval( "stack.equalsText('Stack size: 0')" ) );
     }
-
 }

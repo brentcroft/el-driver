@@ -27,17 +27,14 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
             ELTemplateManager em = jstl.getELTemplateManager();
 
             em.addPrimaryResolvers(
-                    new MapStepsELResolver(
-                            em,
-                            em,
-                            AbstractModelItem.staticModel ) );
+                    new ThreadLocalRootResolver( AbstractModelItem.scopeStack ) );
 
             em.addSecondaryResolvers(
-                    new ConditionalMethodsELResolver(
-                            AbstractModelItem.scopeStack,
-                            AbstractModelItem.staticModel),
-                    new SimpleMapELResolver(
-                            AbstractModelItem.staticModel ) );
+                    new MapMethodELResolver(),
+                    new CompiledStepsResolver( AbstractModelItem.scopeStack ),
+                    new MapStepsELResolver( em, em ),
+                    new ConditionalMethodsELResolver( AbstractModelItem.scopeStack ),
+                    new SimpleMapELResolver( AbstractModelItem.staticModel ) );
 
             ImportHandler ih = em
                     .getELContextFactory()
@@ -92,6 +89,12 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
     public Evaluator getEvaluator()
     {
         return jstl::eval;
+    }
+
+    @Override
+    public ELCompiler getELCompiler()
+    {
+        return jstl::compile;
     }
 
     @Override

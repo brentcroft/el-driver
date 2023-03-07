@@ -1,6 +1,6 @@
 
 # create a new browser
-Browsers.instance().put( 'xyz', Browser() );
+Browsers.newBrowser('xyz');
 
 # assign a lambda
 xyz.greeting = ( message ) -> c:println( message );
