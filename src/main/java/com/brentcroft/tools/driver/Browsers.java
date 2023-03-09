@@ -24,9 +24,8 @@ public class Browsers extends HashMap<String, Browser>
     public static PageModel newBrowser(String key) {
         Browser browser = new Browser();
         instance().put(key, browser);
-        browser
-                .getPageModel()
-                .getStaticModel()
+        ModelItem
+                .staticModel
                 .put( key, browser.getPageModel() );
         return browser.getPageModel();
     }

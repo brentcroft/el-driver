@@ -26,15 +26,10 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
         {
             ELTemplateManager em = jstl.getELTemplateManager();
 
-            em.addPrimaryResolvers(
-                    new ThreadLocalRootResolver( AbstractModelItem.scopeStack ) );
+            AbstractModelItem.scopeStack = em.getELContextFactory().getScopeStack();
+            AbstractModelItem.staticModel = em.getELContextFactory().getStaticModel();
 
-            em.addSecondaryResolvers(
-                    new MapMethodELResolver(),
-                    new CompiledStepsResolver( AbstractModelItem.scopeStack ),
-                    new MapStepsELResolver( em, em ),
-                    new ConditionalMethodsELResolver( AbstractModelItem.scopeStack ),
-                    new SimpleMapELResolver( AbstractModelItem.staticModel ) );
+            BrowserELFunctions.install( em );
 
             ImportHandler ih = em
                     .getELContextFactory()
@@ -50,7 +45,6 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
             ih.importClass( Browser.class.getTypeName() );
             ih.importClass( Browsers.class.getTypeName() );
 
-            BrowserELFunctions.install( em );
         }
         catch ( Exception e )
         {
@@ -68,10 +62,8 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
     public Map< String, Object > newContainer()
     {
         MapBindings bindings = new MapBindings( this );
-        bindings.put( "$local", getScopeStack().peek() );
         bindings.put( "$self", this );
         bindings.put( "$parent", getParent() );
-        bindings.put( "$static", getStaticModel() );
         return bindings;
     }
 
