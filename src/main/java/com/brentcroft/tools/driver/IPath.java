@@ -63,7 +63,7 @@ public class IPath
                     .orElse(null);
         }
         if (isNull(xpath) && isNull(cssSelector) && isNull( id ) && isNull( className )) {
-            throw new IllegalArgumentException("IPath has no value for: xpath, cssSelector, id, className");
+            throw new IllegalArgumentException(format("IPath has no value for: xpath, cssSelector, id, className: item=%s", model) );
         }
     }
 
