@@ -16,6 +16,8 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 public class ModelItem extends AbstractModelItem implements ModelElement, Parented
 {
     protected static final JstlTemplateManager jstl = new JstlTemplateManager();
@@ -92,7 +94,9 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
     @Override
     public WebDriver getWebDriver()
     {
-        return getBrowser().getWebDriver();
+        return Optional
+                .ofNullable( getBrowser().getWebDriver() )
+                .orElseThrow(() -> new IllegalArgumentException( format("No WebDriver available available for item: %s", this)));
     }
 
     @Override
@@ -105,6 +109,6 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
                 .filter( p -> p != this )
                 .filter( p -> p instanceof ModelItem )
                 .map( p -> ( ( ModelItem ) p ).getBrowser() )
-                .orElseThrow( () -> new IllegalArgumentException( "No WebDriver available!" ) );
+                .orElseThrow( () -> new IllegalArgumentException( format("No browser available for item: %s", this) ) );
     }
 }

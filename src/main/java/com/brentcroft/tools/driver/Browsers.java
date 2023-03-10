@@ -19,6 +19,9 @@ public class Browsers extends HashMap<String, Browser>
 
     private Browsers() {
         put( DEFAULT, defaultBrowser );
+        defaultBrowser
+                .getPageModel()
+                .setName( "DefaultModel" );
     }
 
     public static PageModel newBrowser(String key) {

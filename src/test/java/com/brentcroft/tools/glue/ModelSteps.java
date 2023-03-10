@@ -2,6 +2,8 @@ package com.brentcroft.tools.glue;
 
 import com.brentcroft.tools.driver.Browser;
 import com.brentcroft.tools.driver.Browsers;
+import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.en.Given;
 
 import static java.lang.String.format;
@@ -11,6 +13,24 @@ public class ModelSteps
     private final Browser browser = Browsers
             .instance()
             .getDefaultBrowser();
+
+    @After
+    public void close_browsers() {
+        Browsers.instance().close();
+    }
+
+    @AfterAll
+    public static void close_browsers_completely() {
+        Browsers.instance().closeCompletely();
+    }
+
+    @Given( "browser {string}" )
+    public void new_browser(String key) {
+        if (!Browsers.instance().containsKey( key ))
+        {
+            Browsers.newBrowser( key );
+        }
+    }
 
     @Given("^apply steps(| after| after all| before all) \"([^\"]*)\"$")
     public void apply_steps_inline(String after, String steps) {

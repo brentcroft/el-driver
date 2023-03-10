@@ -1,15 +1,38 @@
 Feature: Brentcroft Games
 
   Scenario:
-    Given site "src/test/resources/sites/brentcroft-site.xml" is open
+
+    Given browser "brentcroft"
+    Then apply steps
+    """
+    brentcroft.openFromFile( 'src/test/resources/sites/brentcroft-site.xml' )
+    """
 
     Then apply steps
     """
-    home.shithead.click();
-    shithead.whileDo( '!shithead.exists()', 'c:delay(100)', 100 );
+    brentcroft.home.shithead.click();
+    brentcroft.whileDo(
+      () -> !shithead.exists(),
+      ( i ) -> c:delay(100),
+      0,
+      ( seconds ) -> c:raise( c:format( 'Shithead site not opened after %.2f seconds.', [ seconds ] ) )
+    );
 
-    shithead.newGameButton.click(); \
-    shithead.whileDo( '!stack.equalsText( "Stack size: 0" )', 'stepButton.click()', 100 );
+    c:println( 'Shithead site opened.' );
 
-    shithead.eval( "stack.equalsText('Stack size: 0')" );
+    brentcroft.shithead.newGameButton.click();
+
+    c:println( 'New game.' );
+
+    brentcroft.shithead.whileDo(
+      () -> !stack.equalsText( 'Stack size: 0' ),
+      ( i ) -> [
+        $self.stepButton.click(),
+        c:println( c:format( 'Step: %s', [ i ] ) )
+      ],
+      100,
+      ( seconds ) -> c:raise( c:format( 'Shithead game not finished after %.2f seconds.', [ seconds ] ) )
+    );
+
+    c:println( 'Game finished.' );
     """

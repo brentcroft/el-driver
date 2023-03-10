@@ -15,10 +15,10 @@
         <model key="eb_v14_512x288_sw_ppmn3" xpath="//a[ contains( @href, '$self.getName()']"/>
     </model>
     <model key="shithead" xpath="//input[ @type = 'button' and @value = 'New Game' ]">
-        <entry key="newGameButton" xpath="//input[ @type = 'button' and @value = 'New Game' ]"/>
-        <entry key="stepButton" xpath="//input[ @type = 'button' and @value = 'Step' ]" />
-        <entry key="stack" xpath="//div[ @id = 'stack' ]" />
-        <entry key="gamePlay" xpath="//pre[ @id = 'game-play-log' ]" />
+        <model key="newGameButton" xpath="//input[ @type = 'button' and @value = 'New Game' ]"/>
+        <model key="stepButton" xpath="//input[ @type = 'button' and @value = 'Step' ]" />
+        <model key="stack" xpath="//div[ @id = 'stack' ]" />
+        <model key="gamePlay" xpath="//pre[ @id = 'game-play-log' ]" />
     </model>
 
 
