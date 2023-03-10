@@ -104,7 +104,7 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
     {
         return Optional
                 .ofNullable( getBrowser().getWebDriver() )
-                .orElseThrow(() -> new IllegalArgumentException( format("No WebDriver available available for item: %s", this)));
+                .orElseThrow(() -> new IllegalArgumentException( format("No WebDriver available for item: %s", this)));
     }
 
     @Override
