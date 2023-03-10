@@ -6,13 +6,13 @@ import com.brentcroft.tools.jstl.MapBindings;
 import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
 import jakarta.el.ImportHandler;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,6 +43,14 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
 
             ih.importClass( Paths.class.getTypeName() );
             ih.importClass( File.class.getTypeName() );
+
+            ih.importClass( LocalDateTime.class.getTypeName() );
+            ih.importClass( LocalDate.class.getTypeName() );
+            ih.importClass( LocalTime.class.getTypeName() );
+
+            // selenium classes
+            ih.importClass( By.ByXPath.class.getTypeName() );
+            ih.importClass( By.ByCssSelector.class.getTypeName() );
 
             ih.importClass( Browser.class.getTypeName() );
             ih.importClass( Browsers.class.getTypeName() );

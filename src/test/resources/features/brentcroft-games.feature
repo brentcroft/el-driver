@@ -1,20 +1,17 @@
 Feature: Brentcroft Games
 
-  Scenario:
+  Scenario: Play Brentcroft Shithead
 
     Given browser "brentcroft"
     Then apply steps
     """
-    brentcroft.openFromFile( 'src/test/resources/sites/brentcroft-site.xml' )
-    """
-
-    Then apply steps
-    """
+    brentcroft.openFromFile( 'src/test/resources/sites/brentcroft-site.xml' );
     brentcroft.home.shithead.click();
+
     brentcroft.whileDo(
       () -> !shithead.exists(),
       ( i ) -> c:delay(100),
-      0,
+      10,
       ( seconds ) -> c:raise( c:format( 'Shithead site not opened after %.2f seconds.', [ seconds ] ) )
     );
 
@@ -27,7 +24,7 @@ Feature: Brentcroft Games
     brentcroft.shithead.whileDo(
       () -> !stack.equalsText( 'Stack size: 0' ),
       ( i ) -> [
-        $self.stepButton.click(),
+        stepButton.click(),
         c:println( c:format( 'Step: %s', [ i ] ) )
       ],
       100,
