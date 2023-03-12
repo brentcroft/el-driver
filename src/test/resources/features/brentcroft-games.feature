@@ -3,6 +3,7 @@ Feature: Brentcroft Games
   Scenario: Play Brentcroft Shithead
 
     Given browser "brentcroft"
+
     Then apply steps
     """
     brentcroft.openFromFile( 'src/test/resources/sites/brentcroft-site.xml' );
