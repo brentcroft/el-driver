@@ -177,6 +177,7 @@ public class Browser
 
             String driverPath = ( String ) pageModel.get( "$driverPath" );
             String driverModel = ( String ) pageModel.get( "$driverModel" );
+            String driverArgs = (String) pageModel.get( "$driverArgs" );
 
             Map< String, Object > prefs = new HashMap<>();
             prefs.put( "download.default_directory", downloads.getDownloadPath() );
@@ -187,7 +188,15 @@ public class Browser
                 case "chrome":
                     ChromeOptions chromeOptions = new ChromeOptions();
                     chromeOptions.setHeadless( headless );
-                    chromeOptions.addArguments( "--disable-extensions" );
+                    Optional
+                            .ofNullable( driverArgs )
+                            .ifPresent( args -> {
+                                Stream
+                                        .of( args.split("\\s+") )
+                                        .map( String::trim )
+                                        .filter( arg -> !arg.isEmpty() )
+                                        .forEach( chromeOptions::addArguments );
+                            } );
                     chromeOptions.setExperimentalOption( "prefs", prefs );
                     System.setProperty( "webdriver.chrome.driver", driverPath );
                     webDriver = new ChromeDriver( chromeOptions );
@@ -196,7 +205,15 @@ public class Browser
                 case "edge":
                     EdgeOptions edgeOptions = new EdgeOptions();
                     edgeOptions.setHeadless( headless );
-                    edgeOptions.addArguments( "--disable-extensions" );
+                    Optional
+                            .ofNullable( driverArgs )
+                            .ifPresent( args -> {
+                                Stream
+                                        .of( args.split("\\s+") )
+                                        .map( String::trim )
+                                        .filter( arg -> !arg.isEmpty() )
+                                        .forEach( edgeOptions::addArguments );
+                            } );
                     edgeOptions.setExperimentalOption( "prefs", prefs );
                     System.setProperty( "webdriver.edge.driver", driverPath );
                     webDriver = new EdgeDriver( edgeOptions );

@@ -5,7 +5,7 @@
 
 	<groupId>com.brentcroft.tools</groupId>
 	<artifactId>el-driver</artifactId>
-	<version>01.01.32</version>
+	<version>01.01.33</version>
 
 	<name>Brentcroft EL Driver</name>
 
@@ -38,8 +38,7 @@
 	</scm>
 
 	<properties>
-		<el-plates.version>01.02.25</el-plates.version>
-		<el-model.version>01.01.27</el-model.version>
+		<el-model.version>01.01.28</el-model.version>
 		<selenium.version>4.7.2</selenium.version>
 		<junit.version>4.13.2</junit.version>
 		<cucumber.version>7.9.0</cucumber.version>
@@ -56,11 +55,6 @@
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>${selenium.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.brentcroft.tools</groupId>
-			<artifactId>el-plates</artifactId>
-			<version>${el-plates.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.brentcroft.tools</groupId>
