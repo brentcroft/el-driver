@@ -2,7 +2,6 @@ package com.brentcroft.tools.driver;
 
 import lombok.Getter;
 import lombok.Setter;
-import sun.jvm.hotspot.utilities.AssertionFailure;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class Downloads
             }
         }
         if (!fileExists.get()) {
-            throw new AssertionFailure( format("Timed out waiting for to detect [%s] in downloads.", filename));
+            throw new IllegalArgumentException( format("Timed out waiting for to detect [%s] in downloads.", filename));
         }
     }
 }
