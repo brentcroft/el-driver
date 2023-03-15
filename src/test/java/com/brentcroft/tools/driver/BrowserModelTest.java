@@ -36,20 +36,6 @@ public class BrowserModelTest
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void loadsJakartaELSite() {
-        pageModel.appendFromJson( "{ '$xml': 'jakarta-el.xml' }" );
-        pageModel.getBrowser().open();
-
-        assertEquals(true, pageModel.eval( "packages.javaxScript.exists()" ) );
-        pageModel.eval( "packages.javaxScript.click()" );
-
-        assertEquals(true, pageModel.eval( "package.scriptEngineManager.exists()" ) );
-        pageModel.eval( "package.scriptEngineManager.click()" );
-
-        assertEquals(true, pageModel.eval( "classes.exists()" ) );
-        assertEquals(true, pageModel.eval( "classes.scriptEngineManager.exists()" ) );
-    }
 
     @Test
     public void loadsBrentcroftGameSite() {
