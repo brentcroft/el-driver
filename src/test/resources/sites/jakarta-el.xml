@@ -1,0 +1,21 @@
+<jakarta-el
+        properties="browser.properties"
+        url="https://docs.oracle.com/javase/8/docs/api/" >
+
+    <model key="packages" frame="//frame[ @name = 'packageListFrame']" xpath="//div//ul">
+        <model key="javaxScript" xpath="${ $parent.xpath() }//li/a[ text() = 'javax.script' ]"/>
+    </model>
+
+    <model key="package" frame="//frame[ @name = 'packageFrame']" xpath="//div//ul">
+        <model key="scriptEngineManager" xpath="${ $parent.xpath() }//li/a[ text() = 'ScriptEngineManager' ]"/>
+    </model>
+
+    <model key="classes" frame="//frame[ @name = 'classFrame']" xpath="//body">
+        <model key="scriptEngineManager" xpath="//h2[ @class = 'title' and contains( text(), 'ScriptEngineManager' ) ]"/>
+        <!-- -->
+        <model key="cookiesPopup" frame="//iframe[ contains( @name, 'trustarc' ) ]"  xpath="//div[ contains( @role, 'dialog' ) ]">
+            <model key="decline" xpath="${ $parent.xpath() }//a[ contains( text(), 'Decline' ) ]" />
+            <model key="close" xpath="${ $parent.xpath() }//a[ contains( text(), 'Close' ) ]" />
+        </model>
+    </model>
+</jakarta-el>

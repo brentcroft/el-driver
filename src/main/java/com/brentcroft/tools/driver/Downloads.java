@@ -2,12 +2,16 @@ package com.brentcroft.tools.driver;
 
 import lombok.Getter;
 import lombok.Setter;
+import sun.jvm.hotspot.utilities.AssertionFailure;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 @Getter
 @Setter
@@ -63,7 +67,9 @@ public class Downloads
 
     public void detect(String filename, long millisTimeout) {
         long timeoutMillis = System.currentTimeMillis() + millisTimeout;
-        while(!new File( directory,filename).exists() && timeoutMillis < System.currentTimeMillis()) {
+        Supplier<Boolean> fileExists = () -> new File( directory,filename).exists() && timeoutMillis < System.currentTimeMillis();
+
+        while(!fileExists.get()) {
             try
             {
                 Thread.sleep( 100 );
@@ -72,6 +78,9 @@ public class Downloads
             {
                 e.printStackTrace();
             }
+        }
+        if (!fileExists.get()) {
+            throw new AssertionFailure( format("Timed out waiting for to detect [%s] in downloads.", filename));
         }
     }
 }

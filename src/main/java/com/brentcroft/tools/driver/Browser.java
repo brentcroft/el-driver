@@ -187,7 +187,9 @@ public class Browser
             {
                 case "chrome":
                     ChromeOptions chromeOptions = new ChromeOptions();
-                    chromeOptions.setHeadless( headless );
+                    if (headless) {
+                        chromeOptions.addArguments( "--headless=new" );
+                    }
                     Optional
                             .ofNullable( driverArgs )
                             .ifPresent( args -> {
@@ -204,7 +206,9 @@ public class Browser
 
                 case "edge":
                     EdgeOptions edgeOptions = new EdgeOptions();
-                    edgeOptions.setHeadless( headless );
+                    if (headless) {
+                        edgeOptions.addArguments( "--headless=new" );
+                    }
                     Optional
                             .ofNullable( driverArgs )
                             .ifPresent( args -> {
@@ -221,7 +225,7 @@ public class Browser
 
                 case "safari":
                     SafariOptions safariOptions = new SafariOptions();
-                    System.setProperty( "webdriver.safari.driver", driverPath );
+                   System.setProperty( "webdriver.safari.driver", driverPath );
                     webDriver = new SafariDriver( safariOptions );
                     break;
 

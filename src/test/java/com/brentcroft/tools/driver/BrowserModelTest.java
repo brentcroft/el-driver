@@ -38,7 +38,7 @@ public class BrowserModelTest
 
     @Test
     public void loadsJakartaELSite() {
-        pageModel.appendFromJson( "{ '$json': 'jakarta-el.json' }" );
+        pageModel.appendFromJson( "{ '$xml': 'jakarta-el.xml' }" );
         pageModel.getBrowser().open();
 
         assertEquals(true, pageModel.eval( "packages.javaxScript.exists()" ) );
