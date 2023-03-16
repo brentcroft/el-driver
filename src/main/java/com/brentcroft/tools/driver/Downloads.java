@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -76,9 +75,10 @@ public class Downloads
 
     public void detect( String filename, long millisTimeout )
     {
-        long timeoutMillis = System.currentTimeMillis() + millisTimeout;
+        long started = System.currentTimeMillis();
+        long timeoutMillis = started + millisTimeout;
 
-        while ( ! new File( directory, filename ).exists() && timeoutMillis < System.currentTimeMillis() )
+        while ( ! new File( directory, filename ).exists() && ( timeoutMillis > System.currentTimeMillis() ) )
         {
             try
             {
@@ -91,7 +91,11 @@ public class Downloads
         }
         if ( ! new File( directory, filename ).exists() )
         {
-            throw new IllegalArgumentException( format( "Timed out waiting for to detect [%s] in downloads.", filename ) );
+            throw new IllegalArgumentException( format(
+                    "Timed out waiting to detect [%s] in downloads (after %.2f seconds).",
+                    filename,
+                    Long.valueOf( System.currentTimeMillis() - started ).doubleValue() / 1000
+            ) );
         }
     }
 }
