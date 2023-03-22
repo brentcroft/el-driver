@@ -15,30 +15,43 @@ public class ModelSteps
             .getDefaultBrowser();
 
     @After
-    public void close_browsers() {
+    public void close_browsers()
+    {
         Browsers.instance().close();
     }
 
     @AfterAll
-    public static void close_browsers_completely() {
+    public static void close_browsers_completely()
+    {
         Browsers.instance().closeCompletely();
     }
 
     @Given( "browser {string}" )
-    public void new_browser(String key) {
-        if (!Browsers.instance().containsKey( key ))
+    public void new_browser( String key )
+    {
+        if ( Browsers.instance().containsKey( key ) )
+        {
+            Browsers
+                    .instance()
+                    .get( key )
+                    .getPageModel()
+                    .clear();
+        }
+        else
         {
             Browsers.newBrowser( key );
         }
     }
 
-    @Given("^apply steps(| after| after all| before all) \"([^\"]*)\"$")
-    public void apply_steps_inline(String after, String steps) {
+    @Given( "^apply steps(| after| after all| before all) \"([^\"]*)\"$" )
+    public void apply_steps_inline( String after, String steps )
+    {
         final Runnable action = () -> browser
                 .getPageModel()
                 .steps( steps );
 
-        switch (after.trim()) {
+        switch ( after.trim() )
+        {
             case "before all":
                 browser.getBeforeAlls().put( steps, action );
                 break;
@@ -53,38 +66,43 @@ public class ModelSteps
         }
     }
 
-    @Given("^apply steps(| after| after all| before all)$")
-    public void apply_steps_multiline(String after, String steps)
+    @Given( "^apply steps(| after| after all| before all)$" )
+    public void apply_steps_multiline( String after, String steps )
     {
         apply_steps_inline( after, steps );
     }
 
     @Given( "site {string} is open" )
-    public void site_is_open(String siteFile) {
-        if (siteFile.endsWith( ".json" ))
+    public void site_is_open( String siteFile )
+    {
+        if ( siteFile.endsWith( ".json" ) )
         {
-            browser.getPageModel().appendFromJson( format("{'$json': '%s'}", siteFile) );
+            browser.getPageModel().appendFromJson( format( "{'$json': '%s'}", siteFile ) );
         }
-        else if (siteFile.endsWith( ".xml" ))
+        else if ( siteFile.endsWith( ".xml" ) )
         {
-            browser.getPageModel().appendFromJson( format("{'$xml': '%s'}", siteFile) );
+            browser.getPageModel().appendFromJson( format( "{'$xml': '%s'}", siteFile ) );
         }
         else
         {
-            throw new IllegalArgumentException(format("Site file does not have a JSON or XML extension: %s", siteFile));
+            throw new IllegalArgumentException( format( "Site file does not have a JSON or XML extension: %s", siteFile ) );
         }
         browser.open();
     }
 
-    @Given("^auto quit (on|off)$")
-    public void set_auto_quit(String value) {
+    @Given( "^auto quit (on|off)$" )
+    public void set_auto_quit( String value )
+    {
         browser.setAutoQuit( "on".equalsIgnoreCase( value ) );
     }
 
-    @Given("^step delay (\\d)$")
-    public void set_step_delay(String value) {
+    @Given( "^step delay (\\d)$" )
+    public void set_step_delay( String value )
+    {
     }
-    @Given("^reset step delay$")
-    public void reset_step_delay() {
+
+    @Given( "^reset step delay$" )
+    public void reset_step_delay()
+    {
     }
 }

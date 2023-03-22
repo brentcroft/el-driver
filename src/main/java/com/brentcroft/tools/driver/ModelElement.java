@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,26 @@ public interface ModelElement
             {
                 consumer.accept( getSelf(), getWebElement() );
                 break;
+            }
+            catch ( StaleElementReferenceException e )
+            {
+                retries--;
+                if ( retries < 1 )
+                {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    default <V> V volatileValue( BiFunction< Model, WebElement, V > consumer )
+    {
+        int retries = 5;
+        while ( true )
+        {
+            try
+            {
+                return consumer.apply( getSelf(), getWebElement() );
             }
             catch ( StaleElementReferenceException e )
             {
@@ -193,23 +214,22 @@ public interface ModelElement
 
     default boolean isDisplayed()
     {
-        return getWebElement().isDisplayed();
+        return volatileValue( ( i, e ) -> e.isDisplayed() );
     }
 
     default boolean isEnabled()
     {
-        return getWebElement().isEnabled();
+        return volatileValue( ( i, e ) -> e.isEnabled() );
     }
 
     default boolean isSelected()
     {
-        return getWebElement().isSelected();
+        return volatileValue( ( i, e ) -> e.isSelected() );
     }
 
     default boolean isClickable()
     {
-        WebElement element = getWebElement();
-        return element.isDisplayed() && element.isEnabled();
+        return volatileValue( ( i, e ) -> e.isDisplayed() && e.isEnabled() );
     }
 
     default boolean exists()
@@ -242,19 +262,19 @@ public interface ModelElement
 
     default String getText()
     {
-        WebElement element = getWebElement();
-        switch ( element.getTagName().toLowerCase() )
-        {
-            case "select":
-                return new Select( element ).getFirstSelectedOption().getText();
-            case "button":
-                return element.getText();
-
-            default:
-                return Optional
-                        .ofNullable( element.getAttribute( "value" ) )
-                        .orElseGet( element::getText );
-        }
+        return volatileValue( ( i, e ) -> {
+            switch ( e.getTagName().toLowerCase() )
+            {
+                case "select":
+                    return new Select( e ).getFirstSelectedOption().getText();
+                case "button":
+                    return e.getText();
+                default:
+                    return Optional
+                            .ofNullable( e.getAttribute( "value" ) )
+                            .orElseGet( e::getText );
+            }
+        } );
     }
 
     default boolean containsText( String text )
@@ -321,40 +341,42 @@ public interface ModelElement
 
     default ModelElement setText( CharSequence... keys )
     {
-        getWebElement().sendKeys( Keys.chord( Keys.CONTROL, "a" ) );
-        getWebElement().sendKeys( Keys.DELETE );
-        if ( keys != null && keys.length > 0 )
-        {
-            getWebElement().sendKeys( keys );
-        }
+        volatileElement( ( i, e ) -> {
+            e.sendKeys( Keys.chord( Keys.CONTROL, "a" ) );
+            e.sendKeys( Keys.DELETE );
+            if ( keys != null && keys.length > 0 )
+            {
+                e.sendKeys( keys );
+            }
+        } );
         getSelf().maybeDelay();
         return this;
     }
 
     default ModelElement sendKeys( CharSequence... keys )
     {
-        getWebElement().sendKeys( keys );
+        volatileElement( ( i, e ) -> e.sendKeys( keys ) );
         getSelf().maybeDelay();
         return this;
     }
 
     default ModelElement tab()
     {
-        getWebElement().sendKeys( Keys.TAB );
+        volatileElement( ( i, e ) -> e.sendKeys( Keys.TAB ) );
         getSelf().maybeDelay();
         return this;
     }
 
     default ModelElement enter()
     {
-        getWebElement().sendKeys( Keys.ENTER );
+        volatileElement( ( i, e ) -> e.sendKeys( Keys.ENTER ) );
         getSelf().maybeDelay();
         return this;
     }
 
     default ModelElement space()
     {
-        getWebElement().sendKeys( Keys.SPACE );
+        volatileElement( ( i, e ) -> e.sendKeys( Keys.SPACE ) );
         getSelf().maybeDelay();
         return this;
     }

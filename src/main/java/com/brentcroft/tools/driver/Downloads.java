@@ -41,10 +41,39 @@ public class Downloads
                         if ( file.delete() )
                         {
                             numDeleted[ 0 ]++;
+                            System.out.printf( "removed: %s%n", file);
+                        } else {
+                            System.out.printf( "failed to remove: %s%n", file);
                         }
                     }
                 } );
         return numDeleted[ 0 ];
+    }
+
+    public int clear() {
+        if ( directory == null )
+        {
+            throw new IllegalArgumentException( "directory is null" );
+        }
+        return clearDirectory(directory);
+    }
+
+    private int clearDirectory( File dir ) {
+        int[] numDeleted = { 0 };
+        Stream
+                .of( Objects.requireNonNull( dir.listFiles() ) )
+                .forEach( file -> {
+                    if (file.isDirectory()) {
+                        numDeleted[0] += clearDirectory(file);
+                    }
+                    if (file.delete() ) {
+                        numDeleted[0]++;
+                        System.out.printf( "removed: %s%n", file);
+                    } else {
+                        System.out.printf( "failed to remove: %s%n", file);
+                    }
+                } );
+        return numDeleted[0];
     }
 
     public int move( String prefix, String targetDirectory )
@@ -60,13 +89,19 @@ public class Downloads
                 .of( Objects.requireNonNull( directory.listFiles( f -> f.getName().startsWith( prefix ) ) ) )
                 .forEach( file -> {
                     File newFile = new File( targetDir, file.getName() );
+                    if (newFile.exists()) {
+                        System.out.printf( "removed existing file: [%s]%n", newFile);
+                        newFile.delete();
+                    }
                     try
                     {
                         Files.move( file.toPath(), newFile.toPath() );
                         numMoved[ 0 ]++;
+                        System.out.printf( "moved: [%s] to [%s]%n", file, newFile);
                     }
                     catch ( IOException e )
                     {
+                        System.out.printf( "failed to move: [%s] to [%s]%n", file, newFile);
                         e.printStackTrace();
                     }
                 } );
