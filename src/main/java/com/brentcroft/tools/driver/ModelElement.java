@@ -47,6 +47,7 @@ public interface ModelElement
             catch ( StaleElementReferenceException e )
             {
                 retries--;
+                System.out.printf( "stale element: %s; retries=%s%n", this, retries);
                 if ( retries < 1 )
                 {
                     throw e;
@@ -68,6 +69,7 @@ public interface ModelElement
             catch ( StaleElementReferenceException e )
             {
                 retries--;
+                System.out.printf( "stale element: %s; retries=%s%n", this, retries);
                 if ( retries < 1 )
                 {
                     throw e;
