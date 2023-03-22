@@ -18,6 +18,8 @@ import static java.util.Objects.nonNull;
 
 public interface ModelElement
 {
+    int VOLATILE_RETRIES = 5;
+
     Model getSelf();
 
     Browser getBrowser();
@@ -36,7 +38,7 @@ public interface ModelElement
 
     default void volatileElement( BiConsumer< Model, WebElement > consumer )
     {
-        int retries = 5;
+        int retries = VOLATILE_RETRIES;
         while ( true )
         {
             try
@@ -47,19 +49,19 @@ public interface ModelElement
             catch ( StaleElementReferenceException e )
             {
                 retries--;
-                System.out.printf( "stale element: %s; retries=%s%n", this, retries);
                 if ( retries < 1 )
                 {
-                    throw e;
+                    throw new VolatileElementException( this, VOLATILE_RETRIES );
                 }
+                System.out.printf( "stale element: %s; retries=%s%n", this, retries );
                 getSelf().maybeDelay();
             }
         }
     }
 
-    default <V> V volatileValue( BiFunction< Model, WebElement, V > consumer )
+    default < V > V volatileValue( BiFunction< Model, WebElement, V > consumer )
     {
-        int retries = 5;
+        int retries = VOLATILE_RETRIES;
         while ( true )
         {
             try
@@ -69,11 +71,11 @@ public interface ModelElement
             catch ( StaleElementReferenceException e )
             {
                 retries--;
-                System.out.printf( "stale element: %s; retries=%s%n", this, retries);
                 if ( retries < 1 )
                 {
-                    throw e;
+                    throw new VolatileElementException( this, VOLATILE_RETRIES );
                 }
+                System.out.printf( "stale element: %s; retries=%s%n", this, retries );
                 getSelf().maybeDelay();
             }
         }

@@ -20,7 +20,7 @@ public class PageModel extends ModelItem
         appendFromJson( siteJson );
     }
 
-    public void loadFromFile(String siteFile) {
+    public PageModel loadFromFile(String siteFile) {
         if (siteFile.endsWith( ".json" )) {
             appendFromJson(format("{'$json': '%s'}", siteFile));
         }
@@ -31,10 +31,12 @@ public class PageModel extends ModelItem
         {
             throw new IllegalArgumentException(format("Site file does not have a JSON or XML extension: %s", siteFile));
         }
+        return this;
     }
 
-    public void openFromFile(String siteFile) {
+    public PageModel openFromFile(String siteFile) {
         loadFromFile( siteFile );
         browser.open();
+        return this;
     }
 }
