@@ -51,6 +51,7 @@ public interface ModelElement
                 {
                     throw e;
                 }
+                getSelf().maybeDelay();
             }
         }
     }
@@ -71,6 +72,7 @@ public interface ModelElement
                 {
                     throw e;
                 }
+                getSelf().maybeDelay();
             }
         }
     }
