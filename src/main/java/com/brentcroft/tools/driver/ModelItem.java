@@ -76,6 +76,10 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
         return bindings;
     }
 
+    public static JstlTemplateManager getJstl() {
+        return jstl;
+    }
+
     public static ELTemplateManager getELTemplateManager() {
         return jstl.getELTemplateManager();
     }

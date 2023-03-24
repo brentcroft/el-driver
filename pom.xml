@@ -5,7 +5,7 @@
 
 	<groupId>com.brentcroft.tools</groupId>
 	<artifactId>el-driver</artifactId>
-	<version>01.01.37</version>
+	<version>01.01.38</version>
 
 	<name>Brentcroft EL Driver</name>
 
@@ -38,7 +38,7 @@
 	</scm>
 
 	<properties>
-		<el-model.version>01.01.30</el-model.version>
+		<el-model.version>01.01.31</el-model.version>
 		<selenium.version>4.8.1</selenium.version>
 		<cucumber.version>7.11.1</cucumber.version>
 		<lombok.version>1.18.26</lombok.version>
@@ -51,12 +51,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-web</artifactId>
-			<version>21-ea+5</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
