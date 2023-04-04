@@ -74,9 +74,9 @@ public class BrowserModelTest
         pageModel.getBrowser().open();
 
         assertTrue( (Boolean) pageModel.eval( "!shithead.exists()" ) );
-
-        pageModel.steps("openShithead.run()");
+        pageModel.steps("home.shithead.click()");
         assertTrue( (Boolean) pageModel.eval( "shithead.exists()" ) );
+        pageModel.steps("shithead.play()");
     }
 
     @Test

@@ -266,6 +266,10 @@ public interface ModelElement
         throw new AssertionError( "Element does exist: " + getSelf() );
     }
 
+    default String getAttribute(String key) {
+        return volatileValue( ( i, e ) -> e.getAttribute( key ) );
+    }
+
     default String getText()
     {
         return volatileValue( ( i, e ) -> {

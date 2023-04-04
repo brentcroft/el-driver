@@ -6,6 +6,7 @@ import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
 import jakarta.el.ImportHandler;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -36,6 +37,7 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
                     .getELContextFactory()
                     .getImportHandler();
 
+            ih.importClass( Actions.class.getTypeName() );
             ih.importClass( Keys.class.getTypeName() );
             ih.importClass( Point.class.getTypeName() );
             ih.importClass( Dimension.class.getTypeName() );

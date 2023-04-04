@@ -19,11 +19,20 @@
         <model key="stepButton" xpath="//input[ @type = 'button' and @value = 'Step' ]" />
         <model key="stack" xpath="//div[ @id = 'stack' ]" />
         <model key="gamePlay" xpath="//pre[ @id = 'game-play-log' ]" />
+        <steps key="$$play" args="{ 'maxHands': 100 }">
+            newGameButton.click();
+            $self.whileDo(
+                () -> !stack.equalsText( 'Stack size: 0' ),
+                () -> stepButton.click(),
+                maxHands,
+                (e) -> c:println( c:format( 'Game not finished after %s steps.', [ maxHands ] ) )
+            );
+        </steps>
     </model>
 
 
     <model key="openShithead">
-        <entry key="$$run">
+        <entry key="$$run" args="{}">
             $local.delayMillis = 1000;
 
             # comment lines are stripped out
