@@ -1,6 +1,8 @@
 package com.brentcroft.tools.driver;
 
-import com.brentcroft.tools.el.*;
+import com.brentcroft.tools.el.ELTemplateManager;
+import com.brentcroft.tools.el.MapBindings;
+import com.brentcroft.tools.el.Parented;
 import com.brentcroft.tools.jstl.JstlTemplateManager;
 import com.brentcroft.tools.model.AbstractModelItem;
 import com.brentcroft.tools.model.Model;
@@ -37,25 +39,27 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
                     .getELContextFactory()
                     .getImportHandler();
 
+            // model
+            ih.importClass( ModelItem.class.getTypeName() );
+            ih.importClass( Browser.class.getTypeName() );
+            ih.importClass( Browsers.class.getTypeName() );
+
+            // selenium
+            ih.importClass( By.ByXPath.class.getTypeName() );
+            ih.importClass( By.ByCssSelector.class.getTypeName() );
             ih.importClass( Actions.class.getTypeName() );
             ih.importClass( Keys.class.getTypeName() );
             ih.importClass( Point.class.getTypeName() );
             ih.importClass( Dimension.class.getTypeName() );
 
+            // io
             ih.importClass( Paths.class.getTypeName() );
             ih.importClass( File.class.getTypeName() );
 
+            // temporal
             ih.importClass( LocalDateTime.class.getTypeName() );
             ih.importClass( LocalDate.class.getTypeName() );
             ih.importClass( LocalTime.class.getTypeName() );
-
-            // selenium classes
-            ih.importClass( By.ByXPath.class.getTypeName() );
-            ih.importClass( By.ByCssSelector.class.getTypeName() );
-
-            ih.importClass( Browser.class.getTypeName() );
-            ih.importClass( Browsers.class.getTypeName() );
-
         }
         catch ( Exception e )
         {
@@ -78,11 +82,13 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
         return bindings;
     }
 
-    public static JstlTemplateManager getJstl() {
+    public static JstlTemplateManager getJstl()
+    {
         return jstl;
     }
 
-    public static ELTemplateManager getELTemplateManager() {
+    public static ELTemplateManager getELTemplateManager()
+    {
         return jstl.getELTemplateManager();
     }
 
@@ -109,7 +115,7 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
     {
         return Optional
                 .ofNullable( getBrowser().getWebDriver() )
-                .orElseThrow(() -> new IllegalArgumentException( format("No WebDriver available for item: %s", this)));
+                .orElseThrow( () -> new IllegalArgumentException( format( "No WebDriver available for item: %s", this ) ) );
     }
 
     @Override
@@ -122,6 +128,6 @@ public class ModelItem extends AbstractModelItem implements ModelElement, Parent
                 .filter( p -> p != this )
                 .filter( p -> p instanceof ModelItem )
                 .map( p -> ( ( ModelItem ) p ).getBrowser() )
-                .orElseThrow( () -> new IllegalArgumentException( format("No browser available for item: %s", this) ) );
+                .orElseThrow( () -> new IllegalArgumentException( format( "No browser available for item: %s", this ) ) );
     }
 }

@@ -1,11 +1,14 @@
 package com.brentcroft.tools.driver;
 
 import com.brentcroft.tools.el.ELTemplateManager;
+import com.brentcroft.tools.model.Model;
 import com.brentcroft.tools.model.ModelInspectorDialog;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 public class BrowserELFunctions
 {
@@ -14,12 +17,17 @@ public class BrowserELFunctions
         el.mapFunction(
                         "inspect",
                         BrowserELFunctions.class.getMethod("inspect", Map.class, String.class ) );
-
         el.mapFunction(
                         "nextWorkingDay",
                         BrowserELFunctions.class.getMethod("nextWorkingDay", LocalDateTime.class) );
+        el.mapFunction(
+                "newItemFromXml",
+                BrowserELFunctions.class.getMethod("newItemFromXml", String.class) );
+    }
 
-
+    public static Model newItemFromXml(String xmlFile) {
+        return new ModelItem()
+                .appendFromJson( format("{ '$xml': '%s' }", xmlFile ) );
     }
 
     public static void inspect( Map< String, ? > model, String steps) {
